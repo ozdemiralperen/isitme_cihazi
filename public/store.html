@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşitTech - Mağaza</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="page-loader"></div>
+
+    <div id="cookie-banner" class="cookie-banner hidden">
+        <div class="cookie-content">
+          <p>
+            Bu web sitesi, size daha iyi bir deneyim sunmak için çerezler kullanır. 
+            Daha fazla bilgi için gizlilik politikamızı inceleyebilirsiniz.
+          </p>
+          <div class="cookie-buttons">
+            <button id="accept-cookies" class="btn accept">Kabul Et</button>
+            <button id="decline-cookies" class="btn decline">Reddet</button>
+          </div>
+        </div>
+    </div>  
+    
+    <header>
+        <div class="container header-container">
+            <div class="logo">İşit<span>Tech</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#home">Ana Sayfa</a></li>
+                    <li><a href="index.html#about">Hakkımızda</a></li>
+                    <li><a href="index.html#services">Hizmetlerimiz</a></li>
+                    <li><a href="index.html#process">Üretim Süreci</a></li>
+                    <li><a href="store.html" class="active">Mağaza</a></li>
+                    <li><a href="index.html#contact">İletişim</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>Mağaza</h1>
+            <p>İşitme çözümleri ve ek ürünlerimizi keşfedin</p>
+        </div>
+    </section>
+
+    <section class="store">
+        <div class="container">
+            <div class="store-filters">
+                <div class="filter-group">
+                    <label for="category-filter">Kategori:</label>
+                    <select id="category-filter">
+                        <option value="all">Tümü</option>
+                        <option value="hearing-aids">İşitme Cihazları</option>
+                        <option value="ear-molds">Kulak Kalıpları</option>
+                        <option value="accessories">Aksesuarlar</option>
+                        <option value="batteries">Piller</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-filter">Sırala:</label>
+                    <select id="sort-filter">
+                        <option value="featured">Öne Çıkanlar</option>
+                        <option value="price-low">Fiyat: Düşükten Yükseğe</option>
+                        <option value="price-high">Fiyat: Yüksekten Düşüğe</option>
+                        <option value="newest">En Yeniler</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="products-container" class="products-grid">
+                <!-- Ürünler JavaScript ile yüklenecek -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Ürünler yükleniyor...</p>
+                </div>
+            </div>
+            
+            <div class="pagination">
+                <button id="prev-page" class="btn pagination-btn" disabled>
+                    <i class="fas fa-chevron-left"></i> Önceki
+                </button>
+                <span id="page-info">Sayfa 1 / 1</span>
+                <button id="next-page" class="btn pagination-btn" disabled>
+                    Sonraki <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ürün Detay Modalı -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-product-content">
+                <!-- Modal içeriği JavaScript ile doldurulacak -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>İşitTech</h3>
+                <p>Reçine baskı teknolojisiyle üretilen kişiye özel kulak kalıpları ve işitme cihazları ile hayatı daha net duyun.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/isittech" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/isittech" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com/isittech" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Erişim</h3>
+                <ul>
+                    <li><a href="index.html#home">Ana Sayfa</a></li>
+                    <li><a href="index.html#about">Hakkımızda</a></li>
+                    <li><a href="index.html#services">Hizmetlerimiz</a></li>
+                    <li><a href="index.html#process">Üretim Süreci</a></li>
+                    <li><a href="#" class="active">Mağaza</a></li>
+                    <li><a href="index.html#contact">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Yardımcı Bağlantılar</h3>
+                <ul>
+                    <li><a href="#">Gizlilik Politikası</a></li>
+                    <li><a href="#">Kullanım Şartları</a></li>
+                    <li><a href="#">Sıkça Sorulan Sorular</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">İşitme Sağlığı Rehberi</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; <span id="currentYear">2025</span> İşitTech. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="cookie.js"></script>
+    <script src="store.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+</html>

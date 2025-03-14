@@ -1,0 +1,37 @@
+const express = require('express');
+const { connectDB } = require('./db');
+const apiRoutes = require('./routes/api');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 30000;
+
+// COEP başlığı ekleme - diğer middleware'lerden önce
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+  next();
+});
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Ana sayfa rotası
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// API Routes
+app.use('/api', apiRoutes);
+
+// MongoDB bağlantısı ve sunucu başlatma
+async function startServer() {
+  await connectDB();
+  
+  app.listen(PORT, () => {
+    console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor`);
+  });
+}
+
+startServer().catch(console.error);

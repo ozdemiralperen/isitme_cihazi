@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşitTech - Reçine Baskı Kulak Kalıbı ve İşitme Cihazları</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="page-loader"></div>
+
+    <div id="cookie-banner" class="cookie-banner hidden">
+        <div class="cookie-content">
+          <p>
+            Bu web sitesi, size daha iyi bir deneyim sunmak için çerezler kullanır. 
+            Daha fazla bilgi için gizlilik politikamızı inceleyebilirsiniz.
+          </p>
+          <div class="cookie-buttons">
+            <button id="accept-cookies" class="btn accept">Kabul Et</button>
+            <button id="decline-cookies" class="btn decline">Reddet</button>
+          </div>
+        </div>
+      </div>  
+
+    <!-- Sıkça Sorulan Sorular Modal -->
+<div id="faqModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>İşitTech Sıkça Sorulan Sorular</h2>
+        
+        <div class="faq-content">
+            <div class="faq-category">
+                <h3>İşitme Cihazları Hakkında</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazı kullanmaya nasıl alışabilirim?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme cihazı kullanmaya alışmak genellikle 2-4 hafta sürer. Başlangıçta günde birkaç saat kullanıp zamanla süreyi artırmanızı öneriyoruz. Sessiz ortamlardan başlayarak kalabalık ortamlara geçiş yapmanız adaptasyon sürecini kolaylaştırır. Uzmanlarımız bu süreçte size rehberlik edecektir.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazımın ömrü ne kadardır?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Kaliteli bir işitme cihazı, düzenli bakım yapıldığında ortalama 5-7 yıl kullanılabilir. Cihazınızın ömrü; kullanım şekli, bakım sıklığı ve teknolojik özelliklere göre değişiklik gösterebilir. İşitTech olarak, en dayanıklı ve uzun ömürlü işitme cihazlarını sunuyoruz.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazı pili ne kadar süre dayanır?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme cihazı pilinin ömrü, cihazın teknolojisine, kullanım süresine ve ses seviyesine bağlı olarak değişir. Standart işitme cihazı pilleri 5-14 gün arasında kullanılabilir. Şarj edilebilir pilli cihazlar ise tek şarjla 24 saate kadar kullanım sağlayabilir ve pil değiştirme ihtiyacını ortadan kaldırır.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-category">
+                <h3>Kulak Kalıpları ve 3D Baskı</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Reçine baskı kulak kalıpları standart kalıplardan nasıl farklıdır?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Reçine baskı teknolojisiyle üretilen kulak kalıpları, geleneksel yöntemlere göre daha hassas ölçüm sağlar. 3D tarama ve baskı teknolojisi sayesinde kulak kanalınızın tam kopyası çıkarılır, böylece daha konforlu ve sızdırmazlık özelliği yüksek kulak kalıpları elde edilir. Bu, ses kalitesini artırırken akustik geribildirimi (ıslık sesini) azaltır.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Kulak kalıbı ölçüsü alma işlemi nasıl gerçekleşir?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitTech'te kulak kalıbı ölçüsü alma işlemi, konforlu ve hızlı bir süreçtir. Öncelikle kulak kanalınızın güvenliği için muayene edilir. Daha sonra, özel bir malzeme kulak kanalınıza yerleştirilir ve birkaç dakika içinde sertleşmesi beklenir. Alternatif olarak, dijital 3D tarama teknolojimizle kulak kanalınızın hassas bir dijital kopyası çıkarılabilir. Tüm süreç yaklaşık 15-20 dakika sürer ve ağrısızdır.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Kulak kalıbı ne sıklıkla değiştirilmelidir?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Kulak kalıpları genellikle 2-5 yıl kullanılabilir. Ancak, çocuklarda büyüme nedeniyle daha sık değişim gerekebilir. Yetişkinlerde ise kulak anatomisindeki değişiklikler, kalıplarda aşınma veya rahatsızlık hissi olduğunda değişim önerilir. Düzenli kontroller sırasında uzmanlarımız, kulak kalıbınızın durumunu değerlendirecektir.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-category">
+                <h3>Hizmetler ve Fiyatlandırma</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme testleri için randevu nasıl alabilirim?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme testi randevusu almak için web sitemizdeki iletişim formunu doldurabilir, +90 212 345 67 89 numaralı telefondan bizi arayabilir veya info@isittech.com adresine e-posta gönderebilirsiniz. Randevunuz için en uygun gün ve saati belirtmeniz yeterlidir. Ekibimiz en kısa sürede size dönüş yapacaktır.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazları için fiyat aralığı nedir?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme cihazlarının fiyatları, teknoloji düzeyi, özellikler ve model tipine göre değişiklik gösterir. Temel işitme cihazlarından ileri teknoloji ürünlere kadar geniş bir yelpazede seçenek sunuyoruz. Hangi işitme cihazının sizin için uygun olduğunu belirlemek ve güncel fiyat bilgisi almak için işitme değerlendirmesi sonrası uzmanlarımızla görüşmenizi öneriyoruz.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>SGK işitme cihazı ödemelerini karşılıyor mu?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Evet, SGK belirli koşullar altında işitme cihazı ödemelerinin bir kısmını karşılamaktadır. SGK'nın katkı payı, işitme kaybı derecesine ve sağlık kurulu raporuna göre belirlenir. Güncel SGK ödeme koşulları ve gerekli belgeler hakkında detaylı bilgi için merkezimizi ziyaret edebilir veya telefon ile danışabilirsiniz.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazları için garanti süresi nedir?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitTech'te satılan tüm işitme cihazları üretici garantisi altındadır ve bu süre genellikle 2 yıldır. Garanti, üretim hatalarını, malzeme kusurlarını ve normal kullanım koşullarında oluşabilecek arızaları kapsar. Ayrıca, ek ücretle uzatılmış garanti ve bakım paketleri de sunuyoruz. Kulak kalıpları için ise 6 ay garanti sağlıyoruz.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-category">
+                <h3>Bakım ve Takip</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazımın bakımını nasıl yapmalıyım?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme cihazınızın günlük bakımı için şu adımları izlemenizi öneririz:</p>
+                        <ul>
+                            <li>Her gün kullanımdan sonra yumuşak, kuru bir bezle temizleyin</li>
+                            <li>Nemden ve aşırı sıcaklıklardan koruyun</li>
+                            <li>Kullanmadığınız zamanlarda pil kapağını açık bırakın</li>
+                            <li>Cihazla birlikte verilen özel temizleme araçlarını kullanın</li>
+                            <li>Üç ayda bir profesyonel bakım için merkezimizi ziyaret edin</li>
+                        </ul>
+                        <p>Detaylı temizlik talimatları için cihazınızla birlikte verilen kullanım kılavuzuna bakabilirsiniz.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>İşitme cihazım ıslandı, ne yapmalıyım?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme cihazınız ıslandığında hemen şu adımları izleyin:</p>
+                        <ol>
+                            <li>Cihazı kapatın ve pilini çıkarın</li>
+                            <li>Yumuşak, kuru bir bezle cihazın dışını kurulayın</li>
+                            <li>Nem çekici bir kurutma kiti veya kutusu varsa kullanın</li>
+                            <li>Cihazı asla saç kurutucusu, mikrodalga veya fırın gibi cihazlarla kurutmaya çalışmayın</li>
+                            <li>En kısa sürede teknik servisimize başvurun</li>
+                        </ol>
+                        <p>Su geçirmez veya su direnci yüksek cihazlar bile zaman içinde neme maruz kalabilir, bu nedenle profesyonel kontrol önemlidir.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Ne sıklıkla kontrol için gelmeliyim?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>İşitme cihazınız için 3-6 ayda bir düzenli kontrol öneriyoruz. Bu kontroller sırasında cihazınızın durumu değerlendirilir, temizlik yapılır, gerekli ayarlamalar gerçekleştirilir ve işitme durumunuzdaki değişiklikler tespit edilir. Yeni kullanıcılar için ilk üç ayda daha sık kontroller gerekebilir. Ayrıca, cihazınızla ilgili herhangi bir sorun yaşadığınızda da bize başvurabilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Kullanım Şartları Modal -->
+<div id="termsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>İşitTech Kullanım Şartları</h2>
+        
+        <div class="terms-content">
+            <h3>1. Genel Hükümler</h3>
+            <p>İşitTech web sitesini kullanarak aşağıdaki kullanım şartlarını kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız, lütfen sitemizi kullanmayınız.</p>
+            
+            <h3>2. Hizmet Kullanımı</h3>
+            <p>İşitTech web sitesi ve hizmetleri yalnızca bilgilendirme amaçlıdır. İşitme sağlığı ile ilgili profesyonel tavsiyeler için uzman işitme sağlığı uzmanlarına başvurmanız gerekmektedir.</p>
+            
+            <h3>3. Fikri Mülkiyet Hakları</h3>
+            <p>Web sitemizde yer alan tüm içerik, tasarım, logo, görsel, metin ve diğer materyaller İşitTech'e aittir ve telif hakları ile korunmaktadır. İzinsiz kullanımı, kopyalanması veya dağıtılması yasaktır.</p>
+            
+            <h3>4. Kullanıcı Sorumlulukları</h3>
+            <p>Web sitemizi kullanırken:</p>
+            <ul>
+                <li>Doğru ve eksiksiz bilgi vermeyi kabul edersiniz</li>
+                <li>Web sitesine zarar verebilecek davranışlardan kaçınmayı taahhüt edersiniz</li>
+                <li>Yasadışı veya etik olmayan amaçlarla siteyi kullanmamayı kabul edersiniz</li>
+                <li>Başkalarının siteden yararlanmasını engelleyecek davranışlardan kaçınmayı kabul edersiniz</li>
+            </ul>
+            
+            <h3>5. Ürün ve Hizmet Bilgileri</h3>
+            <p>Web sitemizde sunulan ürün ve hizmet bilgileri genel bilgilendirme amaçlıdır. Fiyatlar, teknik özellikler ve kullanılabilirlik bildirimde bulunmaksızın değiştirilebilir. Kesin bilgi için bizimle iletişime geçmenizi öneririz.</p>
+            
+            <h3>6. Randevu ve Siparişler</h3>
+            <p>Web sitesi üzerinden yapılan randevu talepleri ve siparişler, tarafımızca onaylandıktan sonra geçerlilik kazanır. Randevu ve sipariş iptalleri için en az 24 saat önceden bildirimde bulunmanız gerekmektedir.</p>
+            
+            <h3>7. Sorumluluk Sınırlaması</h3>
+            <p>İşitTech, web sitesinin kullanımından doğabilecek doğrudan veya dolaylı zararlardan sorumlu tutulamaz. Bu, veri kaybı, iş kaybı, kar kaybı veya diğer ekonomik kayıpları içerir ancak bunlarla sınırlı değildir.</p>
+            
+            <h3>8. Ödeme Koşulları</h3>
+            <p>Ürün ve hizmetlerimizin ödemesi, önceden belirtilen ödeme yöntemleri ile yapılabilir. Fatura, ürün veya hizmet teslimi sırasında veya sonrasında düzenlenir.</p>
+            
+            <h3>9. Garanti ve İade Koşulları</h3>
+            <p>İşitme cihazları ve kulak kalıpları, kişiye özel üretildiği için iade ve değişim koşulları özel şartlara tabidir. Garanti kapsamı ve süresi, ürün teslimi sırasında belirtilir.</p>
+            
+            <h3>10. Üçüncü Taraf Web Siteleri</h3>
+            <p>Web sitemizde, üçüncü taraf web sitelerine bağlantılar bulunabilir. Bu sitelerin içeriğinden ve gizlilik politikalarından İşitTech sorumlu değildir.</p>
+            
+            <h3>11. Değişiklikler</h3>
+            <p>İşitTech, bu kullanım şartlarını herhangi bir zamanda güncelleme hakkını saklı tutar. Değişiklikler web sitemizde yayınlandığı andan itibaren geçerli olacaktır.</p>
+            
+            <h3>12. Uygulanacak Hukuk</h3>
+            <p>Bu kullanım şartları, Türkiye Cumhuriyeti kanunlarına tabidir ve bu kanunlar çerçevesinde yorumlanacaktır.</p>
+            
+            <h3>13. İletişim</h3>
+            <p>Kullanım şartları hakkında sorularınız veya geri bildirimleriniz için aşağıdaki bilgilerle bize ulaşabilirsiniz:</p>
+            <p>
+                İşitTech<br>
+                ...<br>
+                E-posta: ...<br>
+                Telefon: ...
+            </p>
+            
+            <p>Son güncelleme tarihi: 10 Mart 2025</p>
+        </div>
+    </div>
+</div>
+    
+    <!-- Gizlilik Politikası Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+          <span class="close-button">&times;</span>
+          <h2>İşitTech Gizlilik Politikası</h2>
+          
+          <div class="privacy-content">
+            <h3>1. Giriş</h3>
+            <p>İşitTech olarak, kişisel verilerinizin gizliliğine ve korunmasına büyük önem veriyoruz. Bu Gizlilik Politikası, web sitemizi ziyaret ettiğinizde ve hizmetlerimizi kullandığınızda sizden topladığımız bilgileri nasıl işlediğimizi açıklamaktadır.</p>
+            
+            <h3>2. Toplanan Bilgiler</h3>
+            <p>Sizden aşağıdaki kişisel bilgileri toplayabiliriz:</p>
+            <ul>
+              <li>Ad ve soyad</li>
+              <li>İletişim bilgileri (e-posta adresi, telefon numarası)</li>
+              <li>Adres bilgileri</li>
+              <li>İşitme sorunları ve sağlık durumu ile ilgili bilgiler</li>
+              <li>Web sitemizi kullanımınızla ilgili teknik bilgiler</li>
+            </ul>
+            
+            <h3>3. Bilgilerin Kullanımı</h3>
+            <p>Topladığımız bilgileri aşağıdaki amaçlar için kullanıyoruz:</p>
+            <ul>
+              <li>Size kişiselleştirilmiş işitme çözümleri sunmak</li>
+              <li>Talep ettiğiniz hizmetleri sağlamak</li>
+              <li>Sizinle iletişim kurmak</li>
+              <li>Ürün ve hizmetlerimizi geliştirmek</li>
+              <li>Yasal yükümlülüklerimizi yerine getirmek</li>
+            </ul>
+            
+            <h3>4. Bilgilerin Paylaşımı</h3>
+            <p>Kişisel verilerinizi, izniniz olmadan üçüncü taraflarla paylaşmıyoruz. Ancak, aşağıdaki durumlarda bilgilerinizi paylaşabiliriz:</p>
+            <ul>
+              <li>Hizmet sağlayıcılarımızla (örn. işitme cihazı üreticileri)</li>
+              <li>Yasal zorunluluk durumunda yetkili kurumlarla</li>
+              <li>Açık izninizle diğer üçüncü taraflarla</li>
+            </ul>
+            
+            <h3>5. Çerezler ve İzleme Teknolojileri</h3>
+            <p>Web sitemizde, kullanıcı deneyimini iyileştirmek için çerezler ve benzer teknolojiler kullanıyoruz. Tarayıcı ayarlarınızı değiştirerek çerezleri reddedebilirsiniz, ancak bu durumda web sitemizin bazı özellikleri düzgün çalışmayabilir.</p>
+            
+            <h3>6. Veri Güvenliği</h3>
+            <p>Kişisel verilerinizi korumak için uygun teknik ve organizasyonel önlemleri alıyoruz. Ancak, internet üzerinden yapılan veri iletiminin %100 güvenli olmadığını unutmayın.</p>
+            
+            <h3>7. Haklarınız</h3>
+            <p>6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında aşağıdaki haklara sahipsiniz:</p>
+            <ul>
+              <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
+              <li>Kişisel verileriniz işlenmişse buna ilişkin bilgi talep etme</li>
+              <li>Kişisel verilerinizin işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme</li>
+              <li>Yurt içinde veya yurt dışında kişisel verilerinizin aktarıldığı üçüncü kişileri bilme</li>
+              <li>Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme</li>
+              <li>Kişisel verilerinizin silinmesini veya yok edilmesini isteme</li>
+            </ul>
+            
+            <h3>8. İletişim</h3>
+            <p>Gizlilik politikamız hakkında sorularınız veya talepleriniz için bize aşağıdaki bilgilerle ulaşabilirsiniz:</p>
+            <p>
+              İşitTech<br>
+              ...<br>
+              E-posta: ...<br>
+              Telefon: "..."
+            </p>
+            
+            <h3>9. Değişiklikler</h3>
+            <p>Bu Gizlilik Politikasını dilediğimiz zaman değiştirme hakkını saklı tutuyoruz. Politikada yapılan değişiklikler web sitemizde yayınlanacaktır.</p>
+            
+            <p>Son güncelleme tarihi: 10 Mart 2025</p>
+          </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container header-container">
+            <div class="logo">İşit<span>Tech</span></div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Ana Sayfa</a></li>
+                    <li><a href="#about">Hakkımızda</a></li>
+                    <li><a href="#services">Hizmetlerimiz</a></li>
+                    <li><a href="#process">Üretim Süreci</a></li>
+                    <li><a href="store.html">Mağaza</a></li>
+                    <li><a href="#contact">İletişim</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container hero-content">
+            <h1>Reçine Baskı Teknolojisi ile Kusursuz İşitme Deneyimi</h1>
+            <p>3D reçine baskı teknolojisiyle üretilen kişiye özel kulak kalıpları ve işitme cihazları ile hayatı daha net duyun.</p>
+            <a href="#contact" class="btn">Bizimle İletişime Geçin</a>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2>Hakkımızda</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>İşitTech olarak, en son teknoloji ile üretilen işitme çözümleri sunuyoruz. Uzman kadromuz ve ileri teknoloji laboratuvarımız ile kullanıcılarımıza en iyi hizmeti veriyoruz.</p>
+                    <p>Reçine baskı teknolojisiyle üretilen kulak kalıplarımız ve işitme cihazlarımız, kullanıcı konforu ve ses kalitesi açısından en üst düzey performans sunmaktadır.</p>
+                    <p>Amacımız, işitme sorunu yaşayan bireylerin yaşam kalitesini artırmak ve sosyal hayata tam katılımlarını sağlamaktır.</p>
+                </div>
+                <div class="about-image">
+                    <img src="/hero-bg.jpg" alt="İşitTech Laboratuvar">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Hizmetlerimiz</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🦻</div>
+                    <h3>Kişiye Özel Kulak Kalıpları</h3>
+                    <p>3D tarama ve reçine baskı teknolojisiyle kulağınızın tam ölçüsüne göre üretilen, maksimum konfor sağlayan kulak kalıpları.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔊</div>
+                    <h3>İşitme Cihazları</h3>
+                    <p>Yüksek teknoloji içeren, kişiselleştirilmiş, kullanımı kolay ve estetik işitme cihazları ile net işitme deneyimi.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Teknik Servis</h3>
+                    <p>İşitme cihazları ve kulak kalıpları için bakım, onarım ve ayarlama hizmetleri.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏥</div>
+                    <h3>İşitme Testi</h3>
+                    <p>Uzman odyologlarımız tarafından gerçekleştirilen kapsamlı işitme testleri ve değerlendirmeler.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>İşitme Uzmanlarına Destek</h3>
+                    <p>Teknik destek, danışmanlık hizmetleri.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔄</div>
+                    <h3>Yükseltme ve Değişim</h3>
+                    <p>Değişen ihtiyaçlara göre işitme cihazı ve kulak kalıbı değişim hizmetleri.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="process">
+        <div class="container">
+            <h2>Üretim Süreci</h2>
+            <div class="process-description">
+                <p>İşitme cihazı ve kulak kalıbı üretim sürecimiz birkaç adımdan oluşur.</p>
+            </div>
+            
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Randevu</h3>
+                    </div>
+                    <p class="step-desc">Size özel bir değerlendirme için randevu alın.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">İşitme Testi</h3>
+                    </div>
+                    <p class="step-desc">Detaylı işitme testinizi gerçekleştirelim.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Ölçü Alma</h3>
+                    </div>
+                    <p class="step-desc">Kişiye özel kalıp için kulak ölçüsü alalım.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">3D Baskı</h3>
+                    </div>
+                    <p class="step-desc">Alınan ölçülere göre kulak kalıbı üretimi yapılır.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-number">5</div>
+                        <h3 class="step-title">Teslimat</h3>
+                    </div>
+                    <p class="step-desc">Cihazınız son kontroller yapıldıktan sonra teslim edilir.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-number">6</div>
+                        <h3 class="step-title">Takip</h3>
+                    </div>
+                    <p class="step-desc">Düzenli kontroller ile en iyi sonuçları alın.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>İletişim</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Bize Ulaşın</h3>
+                    <div class="contact-info-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <h4>Adres</h4>
+                            <p> "" </p>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h4>Telefon</h4>
+                            <p> "" </p>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon">✉️</div>
+                        <div>
+                            <h4>E-posta</h4>
+                            <p> "" </p>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon">🕒</div>
+                        <div>
+                            <h4>Çalışma Saatleri</h4>
+                            <p> "" </p>
+                            <p> "" </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Mesaj Gönderin</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Adınız Soyadınız</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-posta Adresiniz</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefon</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Konu</label>
+                            <input type="text" id="subject" name="subject">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Mesajınız</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Gönder</button>
+                        <div class="form-group">
+                            <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+                        </div>
+                    </form>
+                    <div id="formStatus" class="form-status"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-section">
+                <h3>İşitTech</h3>
+                <p>Reçine baskı teknolojisiyle üretilen kişiye özel kulak kalıpları ve işitme cihazları ile hayatı daha net duyun.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/isittech" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/isittech" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com/isittech" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Erişim</h3>
+                <ul>
+                    <li><a href="#home">Ana Sayfa</a></li>
+                    <li><a href="#about">Hakkımızda</a></li>
+                    <li><a href="#services">Hizmetlerimiz</a></li>
+                    <li><a href="#process">Üretim Süreci</a></li>
+                    <li><a href="store.html">Mağaza</a></li>
+                    <li><a href="#contact">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Yardımcı Bağlantılar</h3>
+                <ul>
+                    <li><a href="#">Gizlilik Politikası</a></li>
+                    <li><a href="#">Kullanım Şartları</a></li>
+                    <li><a href="#">Sıkça Sorulan Sorular</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">İşitme Sağlığı Rehberi</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; <span id="currentYear">2025</span> İşitTech. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="cookie.js"></script>
+    <script src="email.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+</html>
