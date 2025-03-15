@@ -306,7 +306,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // E-posta sağlayıcı kontrolü fonksiyonu
 function checkEmailProvider(email) {
-  const domain = email.split('@')[1].toLowerCase();
+  const domain = email.split('@')[1]?.toLowerCase();
+  
+  // Domain yoksa geçersiz e-posta
+  if (!domain) return { isPopularProvider: false, provider: 'Geçersiz' };
   
   // Popüler e-posta sağlayıcıları
   const popularProviders = {
@@ -318,7 +321,34 @@ function checkEmailProvider(email) {
     'protonmail.com': 'ProtonMail',
     'yandex.com': 'Yandex',
     'aol.com': 'AOL',
-    'zoho.com': 'Zoho'
+    'zoho.com': 'Zoho',
+    
+    // Microsoft hizmetleri
+    'outlook.co.uk': 'Outlook',
+    'outlook.fr': 'Outlook',
+    'outlook.de': 'Outlook',
+    'outlook.jp': 'Outlook',
+    'outlook.com.tr': 'Outlook',
+    'hotmail.co.uk': 'Hotmail',
+    'hotmail.fr': 'Hotmail',
+    'hotmail.de': 'Hotmail',
+    'live.com': 'Microsoft Live',
+    'msn.com': 'MSN',
+    
+    // Google hizmetleri
+    'googlemail.com': 'Gmail',
+    
+    // Apple hizmetleri
+    'me.com': 'iCloud',
+    'mac.com': 'iCloud',
+    
+    // Yahoo hizmetleri
+    'yahoo.co.uk': 'Yahoo',
+    'yahoo.fr': 'Yahoo',
+    'yahoo.de': 'Yahoo',
+    'yahoo.co.jp': 'Yahoo Japan',
+    'ymail.com': 'Yahoo',
+    'rocketmail.com': 'Yahoo',
   };
   
   // Sağlayıcı kontrolü
@@ -341,26 +371,62 @@ function validateEmail(email) {
   return emailRegex.test(email);
 }
 
+// Global bir değişken, e-posta geçerliliğini takip etmek için
+let isEmailValid = false;
+
+// Form durumunu kontrol et ve butonun durumunu güncelle
+function checkFormValidity() {
+  const submitButton = registerForm.querySelector('button[type="submit"]');
+  if (!submitButton) return;
+  
+  // E-posta geçerliyse butonu aktif et, değilse devre dışı bırak
+  submitButton.disabled = !isEmailValid;
+  
+  // Görsel geri bildirim için stil değişikliği
+  if (!isEmailValid) {
+    submitButton.style.opacity = '0.5';
+    submitButton.style.cursor = 'not-allowed';
+  } else {
+    submitButton.style.opacity = '1';
+    submitButton.style.cursor = 'pointer';
+  }
+}
+
 // Kayıt işlemi
 const registerForm = document.getElementById('registerForm');
 const emailInput = document.getElementById('email');
-const emailFeedback = document.createElement('div');
-emailFeedback.className = 'email-feedback';
-emailInput.parentNode.insertBefore(emailFeedback, emailInput.nextSibling);
 
-// E-posta girişi değiştiğinde doğrulama
-if (emailInput) {
+// E-posta geri bildirim elementi oluştur
+if (emailInput && registerForm) {
+  const emailFeedback = document.createElement('div');
+  emailFeedback.className = 'email-feedback';
+  emailFeedback.style.marginTop = '5px';
+  emailFeedback.style.fontSize = '14px';
+  
+  // Mevcut bir feedback elementi varsa kaldır, yoksa ekle
+  const existingFeedback = emailInput.parentNode.querySelector('.email-feedback');
+  if (existingFeedback) {
+    emailInput.parentNode.replaceChild(emailFeedback, existingFeedback);
+  } else {
+    emailInput.parentNode.insertBefore(emailFeedback, emailInput.nextSibling);
+  }
+
+  // E-posta girişi değiştiğinde doğrulama
   emailInput.addEventListener('input', () => {
-    const email = emailInput.value;
+    const email = emailInput.value.trim();
     
     if (!email) {
       emailFeedback.textContent = '';
+      isEmailValid = false;
+      checkFormValidity();
       return;
     }
     
     if (!validateEmail(email)) {
       emailFeedback.textContent = 'Geçersiz e-posta formatı';
       emailFeedback.style.color = 'red';
+      isEmailValid = false;
+      checkFormValidity();
       return;
     }
     
@@ -368,31 +434,50 @@ if (emailInput) {
     if (providerInfo.isPopularProvider) {
       emailFeedback.textContent = `${providerInfo.provider} hesabı tespit edildi`;
       emailFeedback.style.color = 'green';
+      isEmailValid = true;
     } else {
-      emailFeedback.textContent = 'Geçerli format, bilinmeyen servis sağlayıcı';
+      emailFeedback.textContent = 'Geçersiz e-posta';
       emailFeedback.style.color = 'orange';
+      isEmailValid = false; // Bilinmeyen sağlayıcı olsa da format geçerliyse kabul et
     }
+    
+    checkFormValidity();
   });
+  
+  // Sayfa yüklendiğinde butonun durumunu ayarla
+  checkFormValidity();
+  
+  // Sayfa yüklendiğinde mevcut içeriği doğrula
+  if (emailInput.value) {
+    emailInput.dispatchEvent(new Event('input'));
+  }
 }
 
 if (registerForm) {
   registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Formun normal gönderimini engelle
     
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    // E-posta doğrulama
-    if (!validateEmail(email)) {
-      alert('Lütfen geçerli bir e-posta adresi girin');
-      return;
+    // Form zaten submit butonunu devre dışı bırakarak gönderilmesini engelleyecek,
+    // ancak yine de çift kontrol yapalım
+    if (!isEmailValid) {
+      return false;
     }
+    
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
     
     // E-posta sağlayıcı kontrolü
     const providerInfo = checkEmailProvider(email);
     
     try {
+      // Form gönderme butonunu devre dışı bırak
+      const submitButton = registerForm.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Kaydediliyor...';
+      }
+      
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
@@ -414,14 +499,26 @@ if (registerForm) {
         window.location.href = 'login.html';
       } else {
         alert(data.message || 'Kayıt başarısız');
+        // Butonu tekrar aktif hale getir
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Kayıt Ol';
+        }
       }
     } catch (error) {
       console.error('Kayıt hatası:', error);
       alert('Kayıt işlemi sırasında bir hata oluştu');
+      // Butonu tekrar aktif hale getir
+      const submitButton = registerForm.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Kayıt Ol';
+      }
     }
+    
+    return false; // Formun normal gönderimini engelle
   });
 }
-
 // Login işlemi
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
