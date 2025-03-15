@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alışveriş Sepeti</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">İşit<span>Tech</span></div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Ana Sayfa</a></li>
+                    <li><a href="store.html">Mağaza</a></li>
+                    <li><a href="cart.html">Sepetim</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="cart-container">
+                <div class="cart-content">
+                    <div class="cart-items" id="cart-items">
+                        <!-- Sepet öğeleri JavaScript ile eklenecek -->
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <h3>Sipariş Özeti</h3>
+                        <div class="summary-row">
+                            <span>Toplam:</span>
+                            <span id="cart-total">0.00 ₺</span>
+                        </div>
+                        <button class="btn checkout-btn" id="checkout-btn">Ödemeye Geç</button>
+                        <button class="btn clear-cart" id="clear-cart">Sepeti Temizle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer buraya gelecek -->
+
+    <script src="/cart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sepeti temizle butonuna tıklama olayı
+            const clearCartBtn = document.getElementById('clear-cart');
+            if (clearCartBtn) {
+                clearCartBtn.addEventListener('click', function() {
+                    const cart = new ShoppingCart();
+                    cart.clearCart();
+                });
+            }
+            
+            // Ödemeye geç butonuna tıklama olayı
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function() {
+                    // Sepette ürün var mı kontrol et
+                    const cart = new ShoppingCart();
+                    if (cart.cart.length === 0) {
+                        alert('Sepetiniz boş. Lütfen önce ürün ekleyin.');
+                        return;
+                    }
+                    
+                    // Ödeme sayfasına yönlendir
+                    window.location.href = '/checkout';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

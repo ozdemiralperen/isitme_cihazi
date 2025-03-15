@@ -335,9 +335,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (product.stock <= 0) return;
             
             const productId = this.getAttribute('data-id');
-            // Sepete ekleme fonksiyonunu burada çağırabilirsiniz
-            // addToCart(productId);
-            alert(`"${product.name}" ürünü sepete eklendi!`);
         });
 
         // Favorilere ekle butonu tıklama olayı
