@@ -1,0 +1,319 @@
+/* Genel Stiller */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary-color: #0052b3;
+    --secondary-color: #f0f8ff;
+    --accent-color: #e55c00;
+    --text-color: #262626;
+    --light-gray: #f5f5f5;
+    --transition-standard: 0.3s;
+}
+
+body {
+    color: var(--text-color);
+    line-height: 1.6;
+    background-color: var(--light-gray);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header Bölümü */
+header {
+    background-color: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    letter-spacing: -1px;
+    position: relative;
+    padding-left: 8px;
+}
+
+.logo::before {
+    content: '';
+    position: absolute;
+    height: 80%;
+    width: 2px;
+    background-color: var(--accent-color);
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.logo span {
+    color: var(--accent-color);
+}
+
+/* Navigasyon */
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 30px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    transition: color var(--transition-standard);
+    position: relative;
+}
+
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width var(--transition-standard);
+}
+
+nav ul li a:hover {
+    color: var(--primary-color);
+}
+
+nav ul li a:hover::after {
+    width: 100%;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    width: 180px;
+    z-index: 10;
+    padding: 10px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 8px 15px;
+    color: #444;
+    font-size: 14px;
+}
+
+.dropdown-menu a:hover {
+    background-color: var(--secondary-color);
+}
+
+.mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.mobile-menu-btn span {
+    width: 30px;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 3px 0;
+    transition: all var(--transition-standard);
+}
+
+/* Kayıt Formu Stili */
+.container h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin: 100px 0 30px;
+    font-size: 2.5rem;
+    position: relative;
+}
+
+.container h1::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 3px;
+    background-color: var(--accent-color);
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+form {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    max-width: 480px;
+    margin: 0 auto 40px;
+    transition: transform var(--transition-standard), box-shadow var(--transition-standard);
+}
+
+form:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: border-color var(--transition-standard), box-shadow var(--transition-standard);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 82, 179, 0.1);
+}
+
+button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 14px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color var(--transition-standard), transform 0.2s;
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #d45400;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.link-container {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #666;
+}
+
+.link-container a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-standard);
+}
+
+.link-container a:hover {
+    color: var(--accent-color);
+}
+
+/* Responsive Tasarım */
+@media (max-width: 992px) {
+    .container h1 {
+        margin-top: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s;
+        z-index: 1000;
+    }
+
+    nav.active {
+        max-height: 300px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        padding: 20px 0;
+    }
+
+    nav ul li {
+        margin: 10px 0 10px 20px;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
+    .mobile-menu-btn.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 6px);
+    }
+
+    .mobile-menu-btn.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-btn.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -6px);
+    }
+    
+    form {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container h1 {
+        font-size: 2rem;
+        margin-top: 70px;
+    }
+    
+    input, button {
+        padding: 12px;
+    }
+}

@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const Contact = require('../models/contact');
 const Product = require('../models/product');
+const User = require('../models/user');
 
 // İletişim formu verilerini kaydetme
 router.post('/contact', async (req, res) => {
@@ -191,6 +194,165 @@ router.get('/categories', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Kategoriler yüklenirken bir hata oluştu',
+            error: error.message
+        });
+    }
+});
+
+module.exports = router;
+
+// Kayıt endpoint'i
+router.post('/register', async (req, res) => {
+    try {
+        console.log('Kayıt isteği:', req.body);
+        
+        const { username, email, password } = req.body;
+        
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Kullanıcı adı, email ve şifre gereklidir'
+            });
+        }
+        
+        // Kullanıcı zaten var mı kontrol et
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bu email zaten kayıtlı'
+            });
+        }
+        
+        // Şifreyi hashle
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Yeni kullanıcı oluştur
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
+            createdAt: new Date()
+        });
+        
+        await newUser.save();
+        console.log('Yeni kullanıcı oluşturuldu:', newUser._id);
+        
+        res.status(201).json({
+            success: true,
+            message: 'Kullanıcı başarıyla oluşturuldu'
+        });
+    } catch (error) {
+        console.error('Kayıt hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası',
+            error: error.message
+        });
+    }
+});
+
+// Giriş endpoint'i
+router.post('/login', async (req, res) => {
+    try {
+        console.log('Giriş isteği:', req.body);
+        
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email ve şifre gereklidir'
+            });
+        }
+        
+        // Kullanıcıyı bul
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçersiz kimlik bilgileri'
+            });
+        }
+        
+        // Şifreyi kontrol et
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçersiz kimlik bilgileri'
+            });
+        }
+        
+        // JWT token oluştur
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET || 'your_jwt_secret',
+            { expiresIn: '1h' }
+        );
+        
+        console.log('Kullanıcı girişi başarılı:', user._id);
+        
+        res.status(200).json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error('Giriş hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası',
+            error: error.message
+        });
+    }
+});
+
+// Korumalı rota örneği - Profil bilgilerini getir
+router.get('/user-profile', async (req, res) => {
+    try {
+        // Token'ı header'dan al
+        const token = req.header('x-auth-token');
+        
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Erişim tokeni bulunamadı'
+            });
+        }
+        
+        try {
+            // Token'ı doğrula
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+            
+            // Kullanıcıyı bul
+            const user = await User.findById(decoded.userId).select('-password');
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Kullanıcı bulunamadı'
+                });
+            }
+            
+            res.json({
+                success: true,
+                user
+            });
+        } catch (err) {
+            return res.status(401).json({
+                success: false,
+                message: 'Geçersiz token'
+            });
+        }
+    } catch (error) {
+        console.error('Profil bilgileri getirme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası',
             error: error.message
         });
     }

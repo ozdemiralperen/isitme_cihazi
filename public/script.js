@@ -122,18 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    window.addEventListener('scroll', function() {
-        const header = document.querySelector('header');
-        
-        if (window.scrollY > 50) {
-            header.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.2)';
-            header.style.padding = '10px 0';
-        } else {
-            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-            header.style.padding = '15px 0';
-        }
-    });
-    
     const serviceCards = document.querySelectorAll('.service-card');
     
     serviceCards.forEach(card => {
@@ -316,3 +304,214 @@ document.addEventListener('DOMContentLoaded', function() {
         currentYearElement.textContent = new Date().getFullYear();
     }
 });
+// E-posta sağlayıcı kontrolü fonksiyonu
+function checkEmailProvider(email) {
+  const domain = email.split('@')[1].toLowerCase();
+  
+  // Popüler e-posta sağlayıcıları
+  const popularProviders = {
+    'gmail.com': 'Gmail',
+    'outlook.com': 'Outlook',
+    'hotmail.com': 'Hotmail',
+    'yahoo.com': 'Yahoo',
+    'icloud.com': 'iCloud',
+    'protonmail.com': 'ProtonMail',
+    'yandex.com': 'Yandex',
+    'aol.com': 'AOL',
+    'zoho.com': 'Zoho'
+  };
+  
+  // Sağlayıcı kontrolü
+  if (popularProviders[domain]) {
+    return {
+      isPopularProvider: true,
+      provider: popularProviders[domain]
+    };
+  }
+  
+  return {
+    isPopularProvider: false,
+    provider: 'Diğer'
+  };
+}
+
+// E-posta format kontrolü
+function validateEmail(email) {
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return emailRegex.test(email);
+}
+
+// Kayıt işlemi
+const registerForm = document.getElementById('registerForm');
+const emailInput = document.getElementById('email');
+const emailFeedback = document.createElement('div');
+emailFeedback.className = 'email-feedback';
+emailInput.parentNode.insertBefore(emailFeedback, emailInput.nextSibling);
+
+// E-posta girişi değiştiğinde doğrulama
+if (emailInput) {
+  emailInput.addEventListener('input', () => {
+    const email = emailInput.value;
+    
+    if (!email) {
+      emailFeedback.textContent = '';
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      emailFeedback.textContent = 'Geçersiz e-posta formatı';
+      emailFeedback.style.color = 'red';
+      return;
+    }
+    
+    const providerInfo = checkEmailProvider(email);
+    if (providerInfo.isPopularProvider) {
+      emailFeedback.textContent = `${providerInfo.provider} hesabı tespit edildi`;
+      emailFeedback.style.color = 'green';
+    } else {
+      emailFeedback.textContent = 'Geçerli format, bilinmeyen servis sağlayıcı';
+      emailFeedback.style.color = 'orange';
+    }
+  });
+}
+
+if (registerForm) {
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    // E-posta doğrulama
+    if (!validateEmail(email)) {
+      alert('Lütfen geçerli bir e-posta adresi girin');
+      return;
+    }
+    
+    // E-posta sağlayıcı kontrolü
+    const providerInfo = checkEmailProvider(email);
+    
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          username, 
+          email, 
+          password,
+          emailProvider: providerInfo.provider,
+          isPopularProvider: providerInfo.isPopularProvider
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+        window.location.href = 'login.html';
+      } else {
+        alert(data.message || 'Kayıt başarısız');
+      }
+    } catch (error) {
+      console.error('Kayıt hatası:', error);
+      alert('Kayıt işlemi sırasında bir hata oluştu');
+    }
+  });
+}
+
+// Login işlemi
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Token'ı saklayın
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Anasayfaya yönlendir
+        window.location.href = 'store.html';
+      } else {
+        alert(data.message || 'Giriş başarısız');
+      }
+    } catch (error) {
+      console.error('Giriş hatası:', error);
+      alert('Giriş işlemi sırasında bir hata oluştu');
+    }
+  });
+}
+// Kullanıcı durumunu kontrol et ve menüyü güncelle
+function updateNavigation() {
+    const userToken = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    const loginElement = document.getElementById('login-link');
+    const userDropdown = document.getElementById('user-dropdown');
+    
+    if (userToken && userData && loginElement) {
+      // Kullanıcı giriş yapmışsa "Profilim" olarak değiştir
+      const user = JSON.parse(userData);
+      loginElement.textContent = 'Profilim';
+      loginElement.href = '#'; // Link'i # olarak değiştiriyoruz çünkü tıklamayı dropdown için kullanacağız
+      
+      // Dropdown toggle ekleyelim
+      loginElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (userDropdown) {
+          // Display değerini toggle et
+          userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
+        }
+      });
+      
+      // Dropdown dışına tıklandığında dropdown'ı kapatma
+      document.addEventListener('click', (e) => {
+        if (userDropdown && e.target !== loginElement && !userDropdown.contains(e.target)) {
+          userDropdown.style.display = 'none';
+        }
+      });
+    }
+  }
+  
+  // Çıkış fonksiyonu
+  function setupLogout() {
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Local storage'dan token ve kullanıcı bilgilerini temizle
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        
+        // Sayfayı yenile veya ana sayfaya yönlendir
+        window.location.href = 'index.html';
+        
+        // Alternatif olarak sadece sayfayı yenileyebilirsiniz
+        // window.location.reload();
+      });
+    }
+  }
+  
+  // Sayfa yüklendiğinde her iki fonksiyonu da çalıştır
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNavigation();
+    setupLogout();
+  });
+  

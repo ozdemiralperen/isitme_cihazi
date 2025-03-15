@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giriş Yap</title>
+  <link rel="stylesheet" href="register.css">
+</head>
+<body>
+
+  <header>
+    <div class="container header-container">
+      <div class="logo">İşit<span>Tech</span></div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Ana Sayfa</a></li>
+          <li><a href="store.html">Mağaza</a></li>
+          <li><a href="cart.html">Sepetim</a></li>
+          <li class="user-menu">
+            <a href="login.html" id="login-link">Giriş Yap</a>
+            <div class="dropdown-menu" id="user-dropdown" style="display: none;">
+              <a href="/profile.html">Profil Bilgilerim</a>
+              <a href="#" id="logout-button">Çıkış Yap</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <div class="mobile-menu-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Giriş Yap</h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">E-posta</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Şifre</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Giriş Yap</button>
+    </form>
+    <div class="link-container">
+      <p>Henüz bir hesabın yok mu? <a href="register.html">Kayıt ol</a></p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
