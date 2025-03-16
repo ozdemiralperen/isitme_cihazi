@@ -393,132 +393,280 @@ function checkFormValidity() {
 }
 
 // Kayıt işlemi
-const registerForm = document.getElementById('registerForm');
-const emailInput = document.getElementById('email');
-
-// E-posta geri bildirim elementi oluştur
-if (emailInput && registerForm) {
-  const emailFeedback = document.createElement('div');
-  emailFeedback.className = 'email-feedback';
-  emailFeedback.style.marginTop = '5px';
-  emailFeedback.style.fontSize = '14px';
+document.addEventListener('DOMContentLoaded', function() {
+  const registerForm = document.getElementById('registerForm');
+  const emailInput = document.getElementById('email');
+  let isEmailValid = false;
+  let verificationCode = '';
   
-  // Mevcut bir feedback elementi varsa kaldır, yoksa ekle
-  const existingFeedback = emailInput.parentNode.querySelector('.email-feedback');
-  if (existingFeedback) {
-    emailInput.parentNode.replaceChild(emailFeedback, existingFeedback);
-  } else {
-    emailInput.parentNode.insertBefore(emailFeedback, emailInput.nextSibling);
-  }
-
-  // E-posta girişi değiştiğinde doğrulama
-  emailInput.addEventListener('input', () => {
-    const email = emailInput.value.trim();
+  // Doğrulama alanı için HTML elementini bul
+  const verificationContainer = document.getElementById('verification-container');
+  
+  // E-posta geri bildirim elementi oluştur
+  if (emailInput && registerForm) {
+    const emailFeedback = document.createElement('div');
+    emailFeedback.className = 'email-feedback';
+    emailFeedback.style.marginTop = '5px';
+    emailFeedback.style.fontSize = '14px';
     
-    if (!email) {
-      emailFeedback.textContent = '';
-      isEmailValid = false;
-      checkFormValidity();
-      return;
-    }
-    
-    if (!validateEmail(email)) {
-      emailFeedback.textContent = 'Geçersiz e-posta formatı';
-      emailFeedback.style.color = 'red';
-      isEmailValid = false;
-      checkFormValidity();
-      return;
-    }
-    
-    const providerInfo = checkEmailProvider(email);
-    if (providerInfo.isPopularProvider) {
-      emailFeedback.textContent = `${providerInfo.provider} hesabı tespit edildi`;
-      emailFeedback.style.color = 'green';
-      isEmailValid = true;
+    // Mevcut bir feedback elementi varsa kaldır, yoksa ekle
+    const existingFeedback = emailInput.parentNode.querySelector('.email-feedback');
+    if (existingFeedback) {
+      emailInput.parentNode.replaceChild(emailFeedback, existingFeedback);
     } else {
-      emailFeedback.textContent = 'Geçersiz e-posta';
-      emailFeedback.style.color = 'orange';
-      isEmailValid = false; // Bilinmeyen sağlayıcı olsa da format geçerliyse kabul et
+      emailInput.parentNode.insertBefore(emailFeedback, emailInput.nextSibling);
     }
-    
-    checkFormValidity();
-  });
-  
-  // Sayfa yüklendiğinde butonun durumunu ayarla
-  checkFormValidity();
-  
-  // Sayfa yüklendiğinde mevcut içeriği doğrula
-  if (emailInput.value) {
-    emailInput.dispatchEvent(new Event('input'));
-  }
-}
 
-if (registerForm) {
-  registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Formun normal gönderimini engelle
+    // E-posta girişi değiştiğinde doğrulama
+    emailInput.addEventListener('input', () => {
+      const email = emailInput.value.trim();
+      
+      if (!email) {
+        emailFeedback.textContent = '';
+        isEmailValid = false;
+        checkFormValidity();
+        return;
+      }
+      
+      if (!validateEmail(email)) {
+        emailFeedback.textContent = 'Geçersiz e-posta formatı';
+        emailFeedback.style.color = 'red';
+        isEmailValid = false;
+        checkFormValidity();
+        return;
+      }
+      
+      const providerInfo = checkEmailProvider(email);
+      if (providerInfo.isPopularProvider) {
+        emailFeedback.textContent = `${providerInfo.provider} hesabı tespit edildi`;
+        emailFeedback.style.color = 'green';
+        isEmailValid = true;
+      } else {
+        emailFeedback.textContent = 'Geçersiz e-posta';
+        emailFeedback.style.color = 'orange';
+        isEmailValid = false; // Bilinmeyen sağlayıcı olsa da format geçerliyse kabul et
+      }
+      
+      checkFormValidity();
+    });
     
-    // Form zaten submit butonunu devre dışı bırakarak gönderilmesini engelleyecek,
-    // ancak yine de çift kontrol yapalım
-    if (!isEmailValid) {
-      return false;
+    // Sayfa yüklendiğinde butonun durumunu ayarla
+    checkFormValidity();
+    
+    // Sayfa yüklendiğinde mevcut içeriği doğrula
+    if (emailInput.value) {
+      emailInput.dispatchEvent(new Event('input'));
     }
-    
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    
-    // E-posta sağlayıcı kontrolü
-    const providerInfo = checkEmailProvider(email);
-    
-    try {
+
+    // Form doğrulama fonksiyonu
+    function checkFormValidity() {
+      const submitButton = registerForm.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = !isEmailValid;
+      }
+    }
+
+    // Rastgele doğrulama kodu oluştur
+    function generateVerificationCode() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+  }
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault(); // Formun normal gönderimini engelle
+      
+      // Form zaten submit butonunu devre dışı bırakarak gönderilmesini engelleyecek,
+      // ancak yine de çift kontrol yapalım
+      if (!isEmailValid) {
+        return false;
+      }
+      
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      
+      // E-posta sağlayıcı kontrolü
+      const providerInfo = checkEmailProvider(email);
+      
       // Form gönderme butonunu devre dışı bırak
       const submitButton = registerForm.querySelector('button[type="submit"]');
       if (submitButton) {
         submitButton.disabled = true;
-        submitButton.textContent = 'Kaydediliyor...';
+        submitButton.textContent = 'Doğrulama Kodu Gönderiliyor...';
       }
-      
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          username, 
-          email, 
-          password,
-          emailProvider: providerInfo.provider,
-          isPopularProvider: providerInfo.isPopularProvider
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
-        window.location.href = 'login.html';
-      } else {
-        alert(data.message || 'Kayıt başarısız');
-        // Butonu tekrar aktif hale getir
+
+      // Doğrulama kodu oluştur
+      verificationCode = generateVerificationCode();
+
+      // EmailJS ile doğrulama kodunu gönder
+      const serviceID = 'service_u1ie1kb'; 
+      const templateID = 'template_jr5kzhx'; // Doğrulama kodu için uygun template
+      const userID = 'kCC8wQSKpJuMXbRlR';
+
+      const templateParams = {
+        email: email,
+        name: username,
+        verification_code: verificationCode,
+        message: 'Kayıt için doğrulama kodunuz: ' + verificationCode
+      };
+
+      try {
+        const response = await emailjs.send(serviceID, templateID, templateParams, userID);
+        console.log('Doğrulama kodu gönderildi:', response.status, response.text);
+        
+        // Doğrulama bölümünü HTML içinde oluştur
+        verificationContainer.innerHTML = `
+          <div class="verification-section">
+            <div class="form-group">
+              <label for="verificationCode">Doğrulama Kodu:</label>
+              <input type="text" class="form-control" id="verificationCode" name="verificationCode" 
+                     placeholder="6 haneli kodu giriniz" required>
+              <small class="text-muted">E-posta adresinize gönderilen 6 haneli kodu giriniz.</small>
+            </div>
+            <button type="button" id="verifyCodeBtn" class="btn btn-primary">Kodu Doğrula</button>
+            <button type="button" id="resendCodeBtn" class="btn btn-secondary">Kodu Tekrar Gönder</button>
+          </div>
+        `;
+        
+        // Doğrulama bölümünü göster
+        verificationContainer.style.display = 'block';
+        
+        // Kayıt butonunu gizle
+        submitButton.style.display = 'none';
+        
+        // Doğrulama kodu işleyicileri ekle
+        setupVerificationHandlers(username, email, password, providerInfo);
+        
+      } catch (error) {
+        console.error('Doğrulama kodu gönderme hatası:', error);
+        alert('Doğrulama kodu gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        
         if (submitButton) {
           submitButton.disabled = false;
           submitButton.textContent = 'Kayıt Ol';
         }
       }
-    } catch (error) {
-      console.error('Kayıt hatası:', error);
-      alert('Kayıt işlemi sırasında bir hata oluştu');
-      // Butonu tekrar aktif hale getir
-      const submitButton = registerForm.querySelector('button[type="submit"]');
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Kayıt Ol';
+      
+      return false; // Formun normal gönderimini engelle
+    });
+  }
+
+  // Doğrulama koduna ilişkin olay işleyicilerini ayarlar
+  function setupVerificationHandlers(username, email, password, providerInfo) {
+    // Doğrulama butonu tıklama
+    document.getElementById('verifyCodeBtn').addEventListener('click', async function() {
+      const enteredCode = document.getElementById('verificationCode').value;
+      
+      if (enteredCode === verificationCode) {
+        // Doğrulama başarılı, gerçek kayıt işlemini yap
+        try {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+              username, 
+              email, 
+              password,
+              emailProvider: providerInfo.provider,
+              isPopularProvider: providerInfo.isPopularProvider,
+              emailVerified: true // E-posta doğrulandı
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+            window.location.href = 'login.html';
+          } else {
+            alert(data.message || 'Kayıt başarısız');
+            // Doğrulama bölümünü gizle ve normal butonu tekrar göster
+            verificationContainer.style.display = 'none';
+            const submitButton = registerForm.querySelector('button[type="submit"]');
+            if (submitButton) {
+              submitButton.style.display = 'block';
+              submitButton.disabled = false;
+              submitButton.textContent = 'Kayıt Ol';
+            }
+          }
+        } catch (error) {
+          console.error('Kayıt hatası:', error);
+          alert('Kayıt işlemi sırasında bir hata oluştu');
+          // Doğrulama bölümünü gizle ve normal butonu tekrar göster
+          verificationContainer.style.display = 'none';
+          const submitButton = registerForm.querySelector('button[type="submit"]');
+          if (submitButton) {
+            submitButton.style.display = 'block';
+            submitButton.disabled = false;
+            submitButton.textContent = 'Kayıt Ol';
+          }
+        }
+      } else {
+        alert('Doğrulama kodu yanlış. Lütfen tekrar deneyiniz.');
       }
-    }
+    });
     
-    return false; // Formun normal gönderimini engelle
-  });
-}
+    // Yeniden kod gönderme butonu tıklama
+    document.getElementById('resendCodeBtn').addEventListener('click', async function() {
+      // Yeni bir doğrulama kodu oluştur
+      verificationCode = generateVerificationCode();
+      
+      const serviceID = 'service_u1ie1kb'; 
+      const templateID = 'template_jr5kzhx';
+      const userID = 'kCC8wQSKpJuMXbRlR';
+
+      const templateParams = {
+        email: email,
+        name: username,
+        verification_code: verificationCode,
+        message: 'Kayıt için doğrulama kodunuz: ' + verificationCode
+      };
+
+      try {
+        const response = await emailjs.send(serviceID, templateID, templateParams, userID);
+        console.log('Yeni doğrulama kodu gönderildi:', response.status, response.text);
+        alert('Yeni doğrulama kodu e-posta adresinize gönderildi.');
+      } catch (error) {
+        console.error('Doğrulama kodu gönderme hatası:', error);
+        alert('Doğrulama kodu gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      }
+    });
+  }
+  
+  // E-posta formatı doğrulama fonksiyonu (kodda var olduğunu varsayıyoruz)
+  function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email.toLowerCase());
+  }
+  
+  // E-posta sağlayıcı kontrolü fonksiyonu (kodda var olduğunu varsayıyoruz)
+  function checkEmailProvider(email) {
+    const domain = email.split('@')[1]?.toLowerCase();
+    
+    if (!domain) return { provider: 'Bilinmiyor', isPopularProvider: false };
+    
+    const providers = {
+      'gmail.com': 'Gmail',
+      'hotmail.com': 'Hotmail',
+      'outlook.com': 'Outlook',
+      'yahoo.com': 'Yahoo',
+      'icloud.com': 'iCloud',
+      'aol.com': 'AOL',
+      'protonmail.com': 'ProtonMail',
+      'mail.com': 'Mail.com',
+      'yandex.com': 'Yandex',
+      'zoho.com': 'Zoho'
+    };
+    
+    return {
+      provider: providers[domain] || 'Diğer',
+      isPopularProvider: domain in providers
+    };
+  }
+});
 // Login işlemi
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
