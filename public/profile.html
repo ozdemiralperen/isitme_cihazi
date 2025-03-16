@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Sayfası</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+
+        <header>
+        <div class="container header-container">
+            <div class="logo">İşit<span>Tech</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#home">Ana Sayfa</a></li>
+                    <li><a href="store.html" class="active">Mağaza</a></li>
+                    <li><a href="cart.html">Sepetim</a></li>
+                    <li class="user-menu">
+                        <a href="login.html" id="login-link">Giriş Yap</a>
+                        <div class="dropdown-menu" id="user-dropdown" style="display: none;">
+                            <a href="/profile.html">Profil Bilgilerim</a>
+                            <a href="#" id="logout-button">Çıkış Yap</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile-header {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .profile-nav {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .profile-content {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        .profile-tab {
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .profile-tab:hover {
+            background-color: #f0f0f0;
+        }
+        .profile-tab.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .badge-appointment {
+            background-color: #17a2b8;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .badge-pending {
+            background-color: #ffc107;
+        }
+        .badge-confirmed {
+            background-color: #28a745;
+        }
+        .badge-canceled {
+            background-color: #dc3545;
+        }
+        .schedule-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .time-slot {
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .time-slot:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .time-slot.selected {
+            background-color: #28a745;
+            color: white;
+        }
+        .time-slot.unavailable {
+            background-color: #dc3545;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .appointment-card {
+            border-left: 5px solid #007bff;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .appointment-card.pending {
+            border-left-color: #ffc107;
+        }
+        .appointment-card.confirmed {
+            border-left-color: #28a745;
+        }
+        .appointment-card.canceled {
+            border-left-color: #dc3545;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">Hoş Geldiniz, <span id="user-name">Kullanıcı</span></h1>
+                    <p class="text-muted" id="user-email">user@example.com</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button id="logout-btn" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-nav">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="profile-tab active" data-tab="appointments">
+                        <i class="fas fa-calendar-check"></i> Randevularım
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="profile-tab" data-tab="new-appointment">
+                        <i class="fas fa-plus-circle"></i> Yeni Randevu
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="profile-tab" data-tab="profile-info">
+                        <i class="fas fa-user"></i> Profil Bilgileri
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="profile-tab" data-tab="orders">
+                        <i class="fas fa-shopping-bag"></i> Siparişlerim
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-content">
+            <!-- Randevularım Sekmesi -->
+            <div id="appointments" class="tab-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Randevularım</h3>
+                    <button class="btn btn-primary" id="refresh-appointments">
+                        <i class="fas fa-sync-alt"></i> Yenile
+                    </button>
+                </div>
+                
+                <div id="appointments-container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <p class="mt-3">Randevularınız yükleniyor...</p>
+                    </div>
+                </div>
+                
+                <div id="no-appointments" class="text-center py-5 hidden">
+                    <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                    <h4>Henüz randevunuz bulunmuyor</h4>
+                    <p class="text-muted">Yeni bir randevu oluşturmak için "Yeni Randevu" sekmesini kullanabilirsiniz.</p>
+                    <button class="btn btn-primary mt-3" id="create-first-appointment">
+                        <i class="fas fa-plus-circle"></i> Randevu Oluştur
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Yeni Randevu Sekmesi -->
+            <div id="new-appointment" class="tab-content hidden">
+                <h3 class="mb-4">Yeni Randevu Oluştur</h3>
+                
+                <form id="appointment-form">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="appointment-service" class="form-label">Hizmet Seçiniz</label>
+                            <select class="form-select" id="appointment-service" required>
+                                <option value="" selected disabled>Hizmet seçin...</option>
+                                <option value="Teknik Destek">Teknik Destek</option>
+                                <option value="Ürün Tanıtımı">Ürün Tanıtımı</option>
+                                <option value="Danışmanlık">Danışmanlık</option>
+                                <option value="Bakım & Onarım">Bakım & Onarım</option>
+                                <option value="Eğitim">Eğitim</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="appointment-date" class="form-label">Tarih Seçiniz</label>
+                            <input type="text" class="form-control" id="appointment-date" placeholder="Tarih seçin" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Uygun Saatler</label>
+                        <div class="schedule-container" id="time-slots">
+                            <p class="text-muted">Lütfen önce bir tarih seçiniz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="appointment-notes" class="form-label">Notlar (İsteğe bağlı)</label>
+                        <textarea class="form-control" id="appointment-notes" rows="3" placeholder="Randevu ile ilgili notlarınızı belirtebilirsiniz..."></textarea>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Randevular, müsaitlik durumuna göre 24 saat içinde onaylanacaktır.
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-secondary me-md-2" id="cancel-appointment">İptal</button>
+                        <button type="submit" class="btn btn-primary" id="save-appointment">Randevu Oluştur</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Profil Bilgileri Sekmesi -->
+            <div id="profile-info" class="tab-content hidden">
+                <h3 class="mb-4">Profil Bilgileri</h3>
+                <form id="profile-form">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="profile-username" class="form-label">Kullanıcı Adı</label>
+                            <input type="text" class="form-control" id="profile-username">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profile-email" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="profile-email" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="profile-phone" class="form-label">Telefon</label>
+                            <input type="tel" class="form-control" id="profile-phone">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profile-address" class="form-label">Adres</label>
+                            <input type="text" class="form-control" id="profile-address">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h4>Şifre Değiştir</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="profile-password" class="form-label">Yeni Şifre</label>
+                            <input type="password" class="form-control" id="profile-password">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profile-password-confirm" class="form-label">Şifre Tekrar</label>
+                            <input type="password" class="form-control" id="profile-password-confirm">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary" id="save-profile">Bilgileri Kaydet</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Siparişlerim Sekmesi -->
+            <div id="orders" class="tab-content hidden">
+                <h3 class="mb-4">Siparişlerim</h3>
+                <p>Siparişleriniz burada listelenecektir.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Randevu İptal Modal -->
+    <div class="modal fade" id="cancelAppointmentModal" tabindex="-1" aria-labelledby="cancelAppointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelAppointmentModalLabel">Randevu İptali</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bu randevuyu iptal etmek istediğinizden emin misiniz?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="button" class="btn btn-danger" id="confirm-cancel-appointment">Randevuyu İptal Et</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/tr.min.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/profileUpdate.js"></script>
+</body>
+</html>

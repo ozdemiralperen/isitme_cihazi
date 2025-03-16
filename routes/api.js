@@ -5,6 +5,10 @@ const jwt = require('jsonwebtoken');
 const Contact = require('../models/contact');
 const Product = require('../models/product');
 const User = require('../models/user');
+const appointmentRoutes = require('./appointmentRoutes');
+
+// Randevu rotalarını ekle
+router.use(appointmentRoutes);
 
 // İletişim formu verilerini kaydetme
 router.post('/contact', async (req, res) => {
