@@ -440,3 +440,88 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+// Profile form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const profileForm = document.getElementById('profile-form');
+    if (profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Oturum süresi dolmuş görünüyor. Lütfen tekrar giriş yapın.');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Şifre kontrolü
+            const newPassword = document.getElementById('profile-password').value;
+            const confirmPassword = document.getElementById('profile-password-confirm').value;
+            
+            if (newPassword && newPassword !== confirmPassword) {
+                alert('Şifreler eşleşmiyor!');
+                return;
+            }
+
+            // Form verilerini hazırla
+            const updateData = {
+                username: document.getElementById('profile-username').value,
+                phone: document.getElementById('profile-phone').value,
+                address: document.getElementById('profile-address').value
+            };
+
+            // Şifre sadece değiştirilmek isteniyorsa ekle
+            if (newPassword) {
+                updateData.password = newPassword;
+            }
+
+            try {
+                // Güncelleme butonunu devre dışı bırak ve yükleniyor göster
+                const submitButton = profileForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Güncelleniyor...';
+
+                // API'ye güncelleme isteği gönder
+                const response = await fetch('/api/update-profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const result = await response.json();
+
+                // Butonu normal haline getir
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+
+                if (result.success) {
+                    // Başarılı mesajı göster
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success mt-3';
+                    alertDiv.textContent = 'Profil bilgileriniz başarıyla güncellendi!';
+                    profileForm.appendChild(alertDiv);
+
+                    // 3 saniye sonra başarı mesajını kaldır
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 3000);
+
+                    // Kullanıcı verisini güncelle
+                    if (typeof loadUserProfile === 'function') {
+                        loadUserProfile();
+                    }
+                } else {
+                    // Hata mesajı göster
+                    alert(result.message || 'Profil güncellenirken bir hata oluştu.');
+                }
+            } catch (error) {
+                console.error('Profil güncelleme hatası:', error);
+                alert('Profil güncellenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+            }
+        });
+    }
+});

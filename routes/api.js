@@ -361,5 +361,69 @@ router.get('/user-profile', async (req, res) => {
         });
     }
 });
-
+// Profil güncelleme endpoint'i
+router.put('/update-profile', async (req, res) => {
+    try {
+        // Token'ı header'dan al
+        const token = req.header('x-auth-token');
+        
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Erişim tokeni bulunamadı'
+            });
+        }
+        
+        try {
+            // Token'ı doğrula
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+            
+            // Güncelleme verilerini hazırla
+            const updateData = {};
+            
+            if (req.body.username) updateData.username = req.body.username;
+            if (req.body.phone) updateData.phone = req.body.phone;
+            if (req.body.address) updateData.address = req.body.address;
+            
+            // Şifre değiştirilmek isteniyorsa
+            if (req.body.password) {
+                updateData.password = await bcrypt.hash(req.body.password, 10);
+            }
+            
+            // Kullanıcıyı güncelle
+            const updatedUser = await User.findByIdAndUpdate(
+                decoded.userId,
+                { $set: updateData },
+                { new: true }
+            ).select('-password');
+            
+            if (!updatedUser) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Kullanıcı bulunamadı'
+                });
+            }
+            
+            res.json({
+                success: true,
+                message: 'Kullanıcı profili başarıyla güncellendi',
+                user: updatedUser
+            });
+            
+        } catch (err) {
+            return res.status(401).json({
+                success: false,
+                message: 'Geçersiz token',
+                error: err.message
+            });
+        }
+    } catch (error) {
+        console.error('Profil güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası',
+            error: error.message
+        });
+    }
+});
 module.exports = router;
