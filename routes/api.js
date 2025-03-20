@@ -210,12 +210,22 @@ router.post('/register', async (req, res) => {
     try {
         console.log('Kayıt isteği:', req.body);
         
-        const { username, email, password } = req.body;
+        const { username, email, password, emailProvider, isPopularProvider, emailVerified } = req.body;
         
+        // Zorunlu alanları kontrol et
         if (!username || !email || !password) {
             return res.status(400).json({
                 success: false,
                 message: 'Kullanıcı adı, email ve şifre gereklidir'
+            });
+        }
+        
+        // Email formatını kontrol et
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçersiz email formatı'
             });
         }
         
@@ -236,22 +246,26 @@ router.post('/register', async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            emailProvider: emailProvider || 'Diğer',
+            emailVerified: emailVerified || false,
+            status: 'active',
             createdAt: new Date()
         });
         
         await newUser.save();
+        
         console.log('Yeni kullanıcı oluşturuldu:', newUser._id);
         
         res.status(201).json({
             success: true,
             message: 'Kullanıcı başarıyla oluşturuldu'
         });
+
     } catch (error) {
         console.error('Kayıt hatası:', error);
         res.status(500).json({
             success: false,
-            message: 'Sunucu hatası',
-            error: error.message
+            message: 'Sunucu hatası: ' + error.message
         });
     }
 });
@@ -276,6 +290,16 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: 'Geçersiz kimlik bilgileri'
+            });
+        }
+        
+        // Hesap durumunu kontrol et
+        if (user.status === 'inactive') {
+            return res.status(403).json({
+                success: false,
+                message: 'Bu hesap askıya alınmıştır. Lütfen yönetici ile iletişime geçin.',
+                suspendedAt: user.suspendedAt,
+                suspendedReason: user.suspendedReason
             });
         }
         

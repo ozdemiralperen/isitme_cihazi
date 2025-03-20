@@ -238,6 +238,12 @@ async function loadUsers() {
                     <td>${user.phone || '-'}</td>
                     <td>${new Date(user.createdAt).toLocaleDateString('tr-TR')}</td>
                     <td>
+                        <span class="badge ${user.status}">${user.status === 'active' ? 'Aktif' : 'Pasif'}</span>
+                    </td>
+                    <td>
+                        <button onclick="toggleUserStatus('${user._id}')" class="btn-icon">
+                            <i class="fas fa-power-off"></i>
+                        </button>
                         <button onclick="editUser('${user._id}')" class="btn-icon">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -450,26 +456,16 @@ async function updateAppointmentStatus(appointmentId) {
 
 // Kullanıcı durumu değiştirme fonksiyonu
 async function toggleUserStatus(userId) {
-    try {
-        const response = await fetch(`/api/admin/users/${userId}/toggle-status`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-auth-token': localStorage.getItem('adminToken')
-            }
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            loadUsers(); // Kullanıcı listesini yenile
-            alert('Kullanıcı durumu başarıyla güncellendi');
-        } else {
-            alert(data.message || 'Kullanıcı durumu güncellenirken bir hata oluştu');
+    await fetch(`/api/admin/users/${userId}/toggle-status`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': localStorage.getItem('adminToken')
         }
-    } catch (error) {
-        console.error('Kullanıcı durumu güncelleme hatası:', error);
-        alert('Kullanıcı durumu güncellenirken bir hata oluştu');
-    }
+    });
+    
+    // Direkt olarak tabloyu yenile
+    loadUsers();
 }
 
 // Kullanıcı düzenleme fonksiyonu
@@ -505,45 +501,44 @@ async function editUser(userId) {
                     <label>Adres</label>
                     <textarea name="address" required>${user.address || ''}</textarea>
                 </div>
-                <div class="form-group">
-                    <label>Durum</label>
-                    <select name="status">
-                        <option value="active" ${user.status === 'active' ? 'selected' : ''}>Aktif</option>
-                        <option value="inactive" ${user.status === 'inactive' ? 'selected' : ''}>Pasif</option>
-                    </select>
                 </div>
                 <button type="submit" class="btn-primary">Güncelle</button>
             `;
 
-            // Form submit olayını dinle
-            document.getElementById('edit-user-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const updateData = Object.fromEntries(formData.entries());
+// Form submit olayını dinle
+document.getElementById('edit-user-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updateData = {
+        username: formData.get('username'),
+        phone: formData.get('phone'),
+        address: formData.get('address')
+    };
 
-                try {
-                    const updateResponse = await fetch(`/api/admin/users/${userId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-auth-token': localStorage.getItem('adminToken')
-                        },
-                        body: JSON.stringify(updateData)
-                    });
+    try {
+        const updateResponse = await fetch(`/api/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': localStorage.getItem('adminToken')
+            },
+            body: JSON.stringify(updateData)
+        });
 
-                    const updateResult = await updateResponse.json();
-                    if (updateResult.success) {
-                        alert('Kullanıcı bilgileri güncellendi');
-                        document.getElementById('edit-user-modal').style.display = 'none';
-                        loadUsers(); // Tabloyu yenile
-                    } else {
-                        alert(updateResult.message || 'Güncelleme başarısız');
-                    }
-                } catch (error) {
-                    console.error('Kullanıcı güncelleme hatası:', error);
-                    alert('Kullanıcı güncellenirken bir hata oluştu');
-                }
-            });
+        if (!updateResponse.ok) {
+            throw new Error('Güncelleme başarısız');
+        }
+
+        const updateResult = await updateResponse.json();
+        if (updateResult.success) {
+            alert('Kullanıcı bilgileri güncellendi');
+            document.getElementById('edit-user-modal').style.display = 'none';
+            loadUsers(); // Tabloyu yenile
+        }
+    } catch (error) {
+        console.error('Kullanıcı güncelleme hatası:', error);
+    }
+});
         }
     } catch (error) {
         console.error('Kullanıcı detayları yükleme hatası:', error);

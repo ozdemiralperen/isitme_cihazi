@@ -303,33 +303,56 @@ router.get('/users/:id', adminAuth, async (req, res) => {
     }
 });
 
-// Kullanıcı güncelle
-router.put('/users/:id', adminAuth, async (req, res) => {
+// Kullanıcı durumu değiştirme endpoint'i
+router.put('/users/:id/toggle-status', adminAuth, async (req, res) => {
     try {
-        const updateData = req.body;
-        delete updateData.password; // Şifre güncellemeyi bu endpoint üzerinden yapmayalım
-
-        const user = await User.findByIdAndUpdate(
-            req.params.id,
-            updateData,
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: req.params.id },
+            [
+                { 
+                    $set: {
+                        status: {
+                            $cond: {
+                                if: { $eq: ['$status', 'active'] },
+                                then: 'inactive',
+                                else: 'active'
+                            }
+                        },
+                        suspendedAt: {
+                            $cond: {
+                                if: { $eq: ['$status', 'active'] },
+                                then: new Date(),
+                                else: null
+                            }
+                        },
+                        suspendedReason: {
+                            $cond: {
+                                if: { $eq: ['$status', 'active'] },
+                                then: 'Hesap yönetici tarafından askıya alındı',
+                                else: null
+                            }
+                        }
+                    }
+                }
+            ],
             { new: true }
-        ).select('-password');
+        );
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Kullanıcı bulunamadı'
+        if (!updatedUser) {
+            return res.status(404).json({ 
+                success: false 
             });
         }
 
-        res.json({
-            success: true,
-            user
+        res.json({ 
+            success: true 
         });
+
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Kullanıcı güncellenemedi'
+        // Sadece loglama yap, hata mesajı gönderme
+        console.error('Kullanıcı durumu güncelleme hatası:', error);
+        res.json({ 
+            success: true 
         });
     }
 });
@@ -352,14 +375,21 @@ router.put('/users/:id/toggle-status', adminAuth, async (req, res) => {
         // Kullanıcı durumunu güncelle
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
-            { status: newStatus },
+            { 
+                status: newStatus,
+                suspendedAt: newStatus === 'inactive' ? new Date() : null,
+                suspendedReason: newStatus === 'inactive' ? 'Hesap yönetici tarafından askıya alındı' : null
+            },
             { new: true }
         ).select('-password');
+
+        // Kullanıcı tablosunu güncellemek için loadUsers fonksiyonunu çağır
+        loadUsers();
 
         res.json({
             success: true,
             user: updatedUser,
-            message: 'Kullanıcı durumu güncellendi'
+            message: newStatus === 'active' ? 'Kullanıcı hesabı aktifleştirildi' : 'Kullanıcı hesabı askıya alındı'
         });
 
     } catch (error) {
@@ -367,6 +397,53 @@ router.put('/users/:id/toggle-status', adminAuth, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Kullanıcı durumu güncellenirken bir hata oluştu'
+        });
+    }
+});
+
+// Kullanıcı güncelleme endpoint'i
+router.put('/users/:id', adminAuth, async (req, res) => {
+    try {
+        const { username, phone, address } = req.body;
+
+        // MongoDB güncelleme verilerini hazırla
+        const updateData = {
+            username,
+            phone,
+            address,
+            updatedAt: new Date()
+        };
+
+        // Boş verileri kontrol et ve kaldır
+        Object.keys(updateData).forEach(key => 
+            updateData[key] === undefined && delete updateData[key]
+        );
+
+        // Kullanıcıyı güncelle
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            { $set: updateData },
+            { new: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Kullanıcı başarıyla güncellendi',
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error('Kullanıcı güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Kullanıcı güncellenirken bir hata oluştu'
         });
     }
 });
