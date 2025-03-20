@@ -2,6 +2,33 @@ const express = require('express');
 const router = express.Router();
 const { Order, User, Product, Appointment } = require('../models');
 const adminAuth = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+
+// Multer konfigürasyonu
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/images/products/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Sadece resim dosyaları yüklenebilir!'));
+        }
+    }
+});
 
 // Admin Dashboard İstatistikleri
 router.get('/dashboard-stats', adminAuth, async (req, res) => {
@@ -86,6 +113,64 @@ router.get('/products/:id', adminAuth, async (req, res) => {
     }
 });
 
+// POST /api/admin/products - Yeni ürün ekleme
+router.post('/products', adminAuth, async (req, res) => {
+    try {
+        const {
+            name,
+            shortDescription,
+            description,
+            category,
+            price,
+            discountPrice,
+            stock,
+            imageUrl,
+            imageGallery,
+            featured,
+            specifications
+        } = req.body;
+
+        // Zorunlu alanları kontrol et
+        if (!name || !description || !category || !price || !stock || !imageUrl) {
+            return res.status(400).json({
+                success: false,
+                message: 'Lütfen tüm zorunlu alanları doldurun'
+            });
+        }
+
+        // Yeni ürün oluştur
+        const newProduct = new Product({
+            name,
+            shortDescription,
+            description,
+            category,
+            price,
+            discountPrice,
+            stock,
+            imageUrl,
+            imageGallery: imageGallery || [],
+            featured: featured || false,
+            specifications: specifications || []
+        });
+
+        // Ürünü kaydet
+        await newProduct.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Ürün başarıyla eklendi',
+            product: newProduct
+        });
+
+    } catch (error) {
+        console.error('Ürün ekleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Ürün eklenirken bir hata oluştu'
+        });
+    }
+});
+
 // PUT /api/admin/products/:id
 router.put('/products/:id', adminAuth, async (req, res) => {
     try {
@@ -107,6 +192,56 @@ router.delete('/products/:id', adminAuth, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Silme hatası' });
+    }
+});
+
+// Tekil görsel yükleme endpoint'i
+router.post('/upload', adminAuth, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Görsel yüklenmedi'
+            });
+        }
+
+        const imageUrl = `/images/products/${req.file.filename}`;
+        
+        res.json({
+            success: true,
+            imageUrl: imageUrl
+        });
+    } catch (error) {
+        console.error('Görsel yükleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Görsel yüklenirken bir hata oluştu'
+        });
+    }
+});
+
+// Çoklu görsel yükleme endpoint'i
+router.post('/upload-gallery', adminAuth, upload.array('gallery', 10), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Görsel yüklenmedi'
+            });
+        }
+
+        const imageUrls = req.files.map(file => `/images/products/${file.filename}`);
+        
+        res.json({
+            success: true,
+            imageUrls: imageUrls
+        });
+    } catch (error) {
+        console.error('Galeri yükleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Görseller yüklenirken bir hata oluştu'
+        });
     }
 });
 

@@ -593,15 +593,13 @@ window.addEventListener('click', (e) => {
 function createSalesChart(monthlySales) {
     const ctx = document.getElementById('sales-chart').getContext('2d');
     
-    // Eğer önceden oluşturulmuş bir grafik varsa yok et
     if (window.salesChart) {
         window.salesChart.destroy();
     }
     
-    const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
-                       'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    const monthNames = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
     
-    const labels = monthlySales.map(sale => `${monthNames[sale._id.month - 1]} ${sale._id.year}`);
+    const labels = monthlySales.map(sale => `${monthNames[sale._id.month - 1]}`);
     const data = monthlySales.map(sale => sale.total);
     
     window.salesChart = new Chart(ctx, {
@@ -619,21 +617,45 @@ function createSalesChart(monthlySales) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        font: {
+                            size: 12
+                        }
+                    }
                 },
                 title: {
                     display: true,
-                    text: 'Aylık Satış Grafiği'
+                    text: 'Aylık Satış Grafiği',
+                    font: {
+                        size: 14
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
                     ticks: {
+                        font: {
+                            size: 11
+                        },
                         callback: function(value) {
-                            return value.toLocaleString('tr-TR') + ' ₺';
+                            if (value >= 1000000) {
+                                return (value / 1000000).toFixed(1) + 'M ₺';
+                            } else if (value >= 1000) {
+                                return (value / 1000).toFixed(1) + 'K ₺';
+                            }
+                            return value + ' ₺';
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 11
                         }
                     }
                 }
@@ -646,7 +668,6 @@ function createSalesChart(monthlySales) {
 function createProductsChart(popularProducts) {
     const ctx = document.getElementById('products-chart').getContext('2d');
     
-    // Eğer önceden oluşturulmuş bir grafik varsa yok et
     if (window.productsChart) {
         window.productsChart.destroy();
     }
@@ -672,20 +693,39 @@ function createProductsChart(popularProducts) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        font: {
+                            size: 12
+                        }
+                    }
                 },
                 title: {
                     display: true,
-                    text: 'En Çok Satan Ürünler'
+                    text: 'En Çok Satan Ürünler',
+                    font: {
+                        size: 14
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
                     ticks: {
+                        font: {
+                            size: 11
+                        },
                         stepSize: 1
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
                     }
                 }
             }
@@ -804,3 +844,349 @@ async function deleteAppointment(appointmentId) {
         }
     }
 }
+
+// Form HTML'inde görsel URL alanı yerine dosya yükleme alanı ekleyelim
+const imageUploadHtml = `
+    <div class="form-group">
+        <label>Ürün Görseli</label>
+        <div class="image-upload-container">
+            <div class="image-upload-area" id="imageDropArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Görseli sürükleyip bırakın veya seçin</p>
+                <input type="file" id="imageInput" accept="image/*" style="display: none">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('imageInput').click()">
+                    Görsel Seç
+                </button>
+            </div>
+            <div id="imagePreview" class="image-preview" style="display: none">
+                <img id="uploadedImage" src="" alt="Yüklenen görsel">
+                <button type="button" class="btn-icon danger remove-image" onclick="removeImage()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Görsel Galerisi</label>
+        <div class="gallery-upload-container">
+            <div class="gallery-upload-area" id="galleryDropArea">
+                <i class="fas fa-images"></i>
+                <p>Galeri görsellerini sürükleyip bırakın veya seçin</p>
+                <input type="file" id="galleryInput" accept="image/*" multiple style="display: none">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('galleryInput').click()">
+                    Görseller Seç
+                </button>
+            </div>
+            <div id="galleryPreview" class="gallery-preview">
+                <!-- Yüklenen görseller buraya eklenecek -->
+            </div>
+        </div>
+    </div>
+`;
+
+// Yeni ürün ekleme fonksiyonunda form içeriğini güncelle
+function addNewProduct() {
+    const modal = document.getElementById('edit-product-modal');
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Yeni Ürün Ekle</h2>
+            <form id="add-product-form">
+                <div class="form-group">
+                    <label>Ürün Adı</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select name="category" required>
+                        <option value="hearing-aids">İşitme Cihazları</option>
+                        <option value="accessories">Aksesuarlar</option>
+                        <option value="batteries">Piller</option>
+                        <option value="ear-molds">Kulak Kalıpları</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kısa Açıklama</label>
+                    <input type="text" name="shortDescription" required>
+                </div>
+                <div class="form-group">
+                    <label>Detaylı Açıklama</label>
+                    <textarea name="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fiyat</label>
+                    <input type="number" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label>İndirimli Fiyat (Opsiyonel)</label>
+                    <input type="number" name="discountPrice">
+                </div>
+                <div class="form-group">
+                    <label>Stok</label>
+                    <input type="number" name="stock" required>
+                </div>
+                ${imageUploadHtml}
+                <div class="form-group">
+                    <label>Görsel Galerisi (Virgülle ayırın)</label>
+                    <input type="text" name="imageGallery">
+                </div>
+                <div class="form-group">
+                    <label>Öne Çıkan Ürün</label>
+                    <input type="checkbox" name="featured">
+                </div>
+                <div id="specifications-container">
+                    <h3>Teknik Özellikler</h3>
+                    <div class="specifications-list"></div>
+                    <button type="button" onclick="addSpecification()" class="btn-secondary">
+                        <i class="fas fa-plus"></i> Özellik Ekle
+                    </button>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Ürünü Kaydet</button>
+                    <button type="button" class="btn-secondary close-modal">İptal</button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+    
+    // Form submit işlemi
+    const form = document.getElementById('add-product-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        
+        // Görsel URL'sini imagePreview'dan al
+        const uploadedImage = document.getElementById('uploadedImage');
+        const imageUrl = uploadedImage ? uploadedImage.src : null;
+        
+        // Galeri görsellerini topla
+        const galleryImages = Array.from(document.querySelectorAll('#galleryPreview img')).map(img => img.src);
+        
+        const productData = {
+            name: formData.get('name'),
+            category: formData.get('category'),
+            shortDescription: formData.get('shortDescription'),
+            description: formData.get('description'),
+            price: Number(formData.get('price')),
+            discountPrice: formData.get('discountPrice') ? Number(formData.get('discountPrice')) : null,
+            stock: Number(formData.get('stock')),
+            imageUrl: imageUrl, // Yüklenen görselin URL'si
+            imageGallery: galleryImages, // Galeri görsellerinin URL'leri
+            featured: formData.get('featured') === 'on',
+            specifications: []
+        };
+    
+        // Zorunlu alan kontrolü
+        if (!productData.imageUrl) {
+            alert('Lütfen bir ürün görseli yükleyin');
+            return;
+        }
+    
+        // Teknik özellikleri topla
+        const specNames = form.querySelectorAll('input[name="spec-name[]"]');
+        const specValues = form.querySelectorAll('input[name="spec-value[]"]');
+        for (let i = 0; i < specNames.length; i++) {
+            if (specNames[i].value && specValues[i].value) {
+                productData.specifications.push({
+                    name: specNames[i].value,
+                    value: specValues[i].value
+                });
+            }
+        }
+    
+        try {
+            const response = await fetch('/api/admin/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': localStorage.getItem('adminToken')
+                },
+                body: JSON.stringify(productData)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Sunucu hatası');
+            }
+    
+            const result = await response.json();
+            if (result.success) {
+                alert('Ürün başarıyla eklendi');
+                modal.style.display = 'none';
+                loadProducts(); // Ürün listesini yenile
+            } else {
+                alert(result.message || 'Ürün eklenirken bir hata oluştu');
+            }
+        } catch (error) {
+            console.error('Ürün ekleme hatası:', error);
+            alert('Ürün eklenirken bir hata oluştu');
+        }
+    });
+    
+    // Modal kapatma işlemleri
+    const closeButtons = modal.querySelectorAll('.close-button, .close-modal');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    });
+    
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Sürükle-bırak olaylarını ekle
+    const imageDropArea = document.getElementById('imageDropArea');
+    const galleryDropArea = document.getElementById('galleryDropArea');
+    const imageInput = document.getElementById('imageInput');
+    const galleryInput = document.getElementById('galleryInput');
+    
+    // Tekil görsel için sürükle-bırak
+    imageDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        imageDropArea.classList.add('drag-over');
+    });
+    
+    imageDropArea.addEventListener('dragleave', () => {
+        imageDropArea.classList.remove('drag-over');
+    });
+    
+    imageDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imageDropArea.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            handleImageUpload(file);
+        }
+    });
+    
+    // Tekil görsel için dosya seçici
+    imageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleImageUpload(file);
+        }
+    });
+    
+    // Galeri görselleri için sürükle-bırak
+    galleryDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        galleryDropArea.classList.add('drag-over');
+    });
+    
+    galleryDropArea.addEventListener('dragleave', () => {
+        galleryDropArea.classList.remove('drag-over');
+    });
+    
+    galleryDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        galleryDropArea.classList.remove('drag-over');
+        const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+        handleGalleryUpload(files);
+    });
+    
+    // Galeri görselleri için dosya seçici
+    galleryInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        handleGalleryUpload(files);
+    });
+}
+
+// Görsel yükleme işleyicisi
+async function handleImageUpload(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+        const response = await fetch('/api/admin/upload', {
+            method: 'POST',
+            headers: {
+                'x-auth-token': localStorage.getItem('adminToken')
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('imagePreview').style.display = 'block';
+            document.getElementById('uploadedImage').src = data.imageUrl;
+            document.getElementById('imageDropArea').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Görsel yükleme hatası:', error);
+        alert('Görsel yüklenirken bir hata oluştu');
+    }
+}
+
+// Galeri görsellerini yükleme işleyicisi
+async function handleGalleryUpload(files) {
+    const formData = new FormData();
+    files.forEach(file => {
+        formData.append('gallery', file);
+    });
+
+    try {
+        const response = await fetch('/api/admin/upload-gallery', {
+            method: 'POST',
+            headers: {
+                'x-auth-token': localStorage.getItem('adminToken')
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            const galleryPreview = document.getElementById('galleryPreview');
+            data.imageUrls.forEach(url => {
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'gallery-image-container';
+                imageContainer.innerHTML = `
+                    <img src="${url}" alt="Galeri görseli">
+                    <button type="button" class="btn-icon danger remove-gallery-image" onclick="removeGalleryImage(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                galleryPreview.appendChild(imageContainer);
+            });
+        }
+    } catch (error) {
+        console.error('Galeri yükleme hatası:', error);
+        alert('Görseller yüklenirken bir hata oluştu');
+    }
+}
+
+// Görsel kaldırma fonksiyonu
+function removeImage() {
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('imageDropArea').style.display = 'block';
+    document.getElementById('uploadedImage').src = '';
+}
+
+// Galeri görseli kaldırma fonksiyonu
+function removeGalleryImage(button) {
+    button.parentElement.remove();
+}
+
+// Teknik özellik ekleme fonksiyonu
+function addSpecification() {
+    const specList = document.querySelector('.specifications-list');
+    const specRow = document.createElement('div');
+    specRow.className = 'spec-row';
+    specRow.innerHTML = `
+        <div class="form-group">
+            <input type="text" placeholder="Özellik Adı" name="spec-name[]" required>
+            <input type="text" placeholder="Değer" name="spec-value[]" required>
+            <button type="button" class="btn-icon danger" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    specList.appendChild(specRow);
+}
+
+// Yeni ürün ekleme butonuna tıklama olayı ekle
+document.getElementById('add-product').addEventListener('click', addNewProduct);
