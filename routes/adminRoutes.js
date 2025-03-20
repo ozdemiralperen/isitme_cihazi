@@ -199,6 +199,91 @@ router.put('/users/:id', adminAuth, async (req, res) => {
     }
 });
 
+// Kullanıcı durumu değiştirme endpoint'i
+router.put('/users/:id/toggle-status', adminAuth, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı'
+            });
+        }
+
+        // Mevcut durumun tersini ayarla
+        const newStatus = user.status === 'active' ? 'inactive' : 'active';
+
+        // Kullanıcı durumunu güncelle
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            { status: newStatus },
+            { new: true }
+        ).select('-password');
+
+        res.json({
+            success: true,
+            user: updatedUser,
+            message: 'Kullanıcı durumu güncellendi'
+        });
+
+    } catch (error) {
+        console.error('Kullanıcı durumu güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Kullanıcı durumu güncellenirken bir hata oluştu'
+        });
+    }
+});
+
+// Kullanıcı silme endpoint'i
+router.delete('/users/:id', adminAuth, async (req, res) => {
+    try {
+        // Kullanıcıyı bul
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı'
+            });
+        }
+
+        // Kullanıcının siparişlerini kontrol et
+        const orders = await Order.find({ userId: user._id });
+        if (orders.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bu kullanıcının siparişleri olduğu için silinemez'
+            });
+        }
+
+        // Kullanıcının randevularını kontrol et
+        const appointments = await Appointment.find({ userId: user._id });
+        if (appointments.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bu kullanıcının randevuları olduğu için silinemez'
+            });
+        }
+
+        // Kullanıcıyı sil
+        await User.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: 'Kullanıcı başarıyla silindi'
+        });
+
+    } catch (error) {
+        console.error('Kullanıcı silme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Kullanıcı silinirken bir hata oluştu'
+        });
+    }
+});
+
 // Randevuları Listele
 router.get('/appointments', adminAuth, async (req, res) => {
     try {
@@ -233,6 +318,57 @@ router.put('/appointments/:id', adminAuth, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Randevu güncellenirken hata oluştu'
+        });
+    }
+});
+
+// Randevu detaylarını getir
+router.get('/appointments/:id', adminAuth, async (req, res) => {
+    try {
+        const appointment = await Appointment.findById(req.params.id)
+            .populate('userId', 'name email'); // Kullanıcı bilgilerini de getir
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Randevu bulunamadı'
+            });
+        }
+
+        res.json({
+            success: true,
+            appointment
+        });
+    } catch (error) {
+        console.error('Randevu detayları getirme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Randevu detayları getirilemedi'
+        });
+    }
+});
+
+// Randevu sil
+router.delete('/appointments/:id', adminAuth, async (req, res) => {
+    try {
+        const appointment = await Appointment.findByIdAndDelete(req.params.id);
+        
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Randevu bulunamadı'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Randevu başarıyla silindi'
+        });
+    } catch (error) {
+        console.error('Randevu silme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Randevu silinirken bir hata oluştu'
         });
     }
 });

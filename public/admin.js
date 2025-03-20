@@ -237,13 +237,12 @@ async function loadUsers() {
                     <td>${user.email}</td>
                     <td>${user.phone || '-'}</td>
                     <td>${new Date(user.createdAt).toLocaleDateString('tr-TR')}</td>
-                    <td><span class="badge ${user.status}">${getStatusText(user.status)}</span></td>
                     <td>
                         <button onclick="editUser('${user._id}')" class="btn-icon">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="toggleUserStatus('${user._id}')" class="btn-icon">
-                            <i class="fas fa-power-off"></i>
+                        <button onclick="deleteUser('${user._id}')" class="btn-icon danger">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 </tr>
@@ -449,20 +448,23 @@ async function updateAppointmentStatus(appointmentId) {
     }
 }
 
-// Kullanıcı durumu değiştirme
+// Kullanıcı durumu değiştirme fonksiyonu
 async function toggleUserStatus(userId) {
     try {
         const response = await fetch(`/api/admin/users/${userId}/toggle-status`, {
             method: 'PUT',
             headers: {
+                'Content-Type': 'application/json',
                 'x-auth-token': localStorage.getItem('adminToken')
             }
         });
         
         const data = await response.json();
         if (data.success) {
-            loadUsers(); // Tabloyu yenile
-            alert('Kullanıcı durumu güncellendi');
+            loadUsers(); // Kullanıcı listesini yenile
+            alert('Kullanıcı durumu başarıyla güncellendi');
+        } else {
+            alert(data.message || 'Kullanıcı durumu güncellenirken bir hata oluştu');
         }
     } catch (error) {
         console.error('Kullanıcı durumu güncelleme hatası:', error);
@@ -546,6 +548,31 @@ async function editUser(userId) {
     } catch (error) {
         console.error('Kullanıcı detayları yükleme hatası:', error);
         alert('Kullanıcı bilgileri yüklenirken bir hata oluştu');
+    }
+}
+
+// Kullanıcı silme fonksiyonu 
+async function deleteUser(userId) {
+    if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-auth-token': localStorage.getItem('adminToken')
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                loadUsers(); // Kullanıcı listesini yenile
+                alert('Kullanıcı başarıyla silindi');
+            } else {
+                alert(data.message || 'Kullanıcı silinirken bir hata oluştu');
+            }
+        } catch (error) {
+            console.error('Kullanıcı silme hatası:', error);
+            alert('Kullanıcı silinirken bir hata oluştu');
+        }
     }
 }
 
@@ -664,4 +691,116 @@ function createProductsChart(popularProducts) {
             }
         }
     });
+}
+
+// Randevu detaylarını görüntüle
+async function viewAppointment(appointmentId) {
+    try {
+        const response = await fetch(`/api/admin/appointments/${appointmentId}`, {
+            headers: {
+                'x-auth-token': localStorage.getItem('adminToken')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const appointment = data.appointment;
+            const modal = document.getElementById('edit-appointment-modal');
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Randevu Detayları</h2>
+                    <div class="appointment-info">
+                        <div class="info-group">
+                            <label>Randevu ID:</label>
+                            <span>${appointment._id}</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Müşteri:</label>
+                            <span>${appointment.userId.name}</span>
+                        </div>
+                        <div class="info-group">
+                            <label>E-posta:</label>
+                            <span>${appointment.userId.email}</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Tarih:</label>
+                            <span>${new Date(appointment.date).toLocaleDateString('tr-TR')}</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Saat:</label>
+                            <span>${appointment.time}</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Hizmet:</label>
+                            <span>${appointment.service}</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Durum:</label>
+                            <span class="badge ${appointment.status}">${appointment.status}</span>
+                        </div>
+                        ${appointment.notes ? `
+                            <div class="info-group">
+                                <label>Notlar:</label>
+                                <p>${appointment.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="modal-actions">
+                        <button onclick="updateAppointmentStatus('${appointment._id}')" class="btn-primary">
+                            <i class="fas fa-edit"></i> Durumu Güncelle
+                        </button>
+                        <button onclick="deleteAppointment('${appointment._id}')" class="btn-danger">
+                            <i class="fas fa-trash"></i> Randevuyu Sil
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            
+            // Modal kapatma işlemleri
+            const closeButton = modal.querySelector('.close-button');
+            closeButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Randevu detayları yükleme hatası:', error);
+        alert('Randevu detayları yüklenirken bir hata oluştu');
+    }
+}
+
+// Randevu silme fonksiyonu
+async function deleteAppointment(appointmentId) {
+    if (confirm('Bu randevuyu silmek istediğinizden emin misiniz?')) {
+        try {
+            const response = await fetch(`/api/admin/appointments/${appointmentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-auth-token': localStorage.getItem('adminToken')
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                loadAppointments(); // Tabloyu yenile
+                document.getElementById('edit-appointment-modal').style.display = 'none';
+                alert('Randevu başarıyla silindi');
+            } else {
+                alert(data.message || 'Randevu silinirken bir hata oluştu');
+            }
+        } catch (error) {
+            console.error('Randevu silme hatası:', error);
+            alert('Randevu silinirken bir hata oluştu');
+        }
+    }
 }

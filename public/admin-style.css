@@ -317,6 +317,57 @@ tr:hover {
     border-radius: 4px;
 }
 
+/* Randevu detay modal stilleri */
+.appointment-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.info-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.info-group label {
+    min-width: 120px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.info-group span {
+    flex: 1;
+}
+
+.info-group p {
+    flex: 1;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
 /* Responsive Tasarım */
 @media (max-width: 768px) {
     .admin-sidebar {
