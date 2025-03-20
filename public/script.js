@@ -667,41 +667,58 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
 });
-// Login işlemi
+// Login işlemi 
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Token'ı saklayın
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        // Anasayfaya yönlendir
-        window.location.href = 'store.html';
-      } else {
-        alert(data.message || 'Giriş başarısız');
-      }
-    } catch (error) {
-      console.error('Giriş hatası:', error);
-      alert('Giriş işlemi sırasında bir hata oluştu');
-    }
-  });
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+            // Önce admin girişini kontrol et
+            const adminResponse = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const adminData = await adminResponse.json();
+            
+            if (adminData.success) {
+                // Admin girişi başarılı
+                localStorage.setItem('adminToken', adminData.token);
+                localStorage.setItem('adminUser', JSON.stringify(adminData.admin));
+                window.location.href = 'admin.html';
+                return;
+            }
+            
+            // Admin girişi başarısız olduysa normal kullanıcı girişini dene
+            const userResponse = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const userData = await userResponse.json();
+            
+            if (userData.success) {
+                localStorage.setItem('token', userData.token);
+                localStorage.setItem('user', JSON.stringify(userData.user));
+                window.location.href = 'store.html';
+            } else {
+                alert(userData.message || 'Giriş başarısız');
+            }
+        } catch (error) {
+            console.error('Giriş hatası:', error);
+            alert('Giriş işlemi sırasında bir hata oluştu');
+        }
+    });
 }
 // Kullanıcı durumunu kontrol et ve menüyü güncelle
 function updateNavigation() {
@@ -759,4 +776,4 @@ function updateNavigation() {
     updateNavigation();
     setupLogout();
   });
-  
+

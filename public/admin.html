@@ -1,0 +1,270 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - İşitTech</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <nav class="admin-sidebar">
+            <div class="admin-header">
+                <h2>İşitTech Admin</h2>
+                <p class="admin-email" id="admin-email"></p>
+            </div>
+            <ul>
+                <li><a href="#" data-section="dashboard" class="active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a></li>
+                <li><a href="#" data-section="orders">
+                    <i class="fas fa-shopping-cart"></i> Siparişler
+                </a></li>
+                <li><a href="#" data-section="appointments">
+                    <i class="fas fa-calendar-check"></i> Randevular
+                </a></li>
+                <li><a href="#" data-section="products">
+                    <i class="fas fa-box"></i> Ürünler
+                </a></li>
+                <li><a href="#" data-section="users">
+                    <i class="fas fa-users"></i> Kullanıcılar
+                </a></li>
+                <li><a href="#" data-section="reports">
+                    <i class="fas fa-chart-bar"></i> Raporlar
+                </a></li>
+                <li><a href="#" data-section="settings">
+                    <i class="fas fa-cog"></i> Ayarlar
+                </a></li>
+            </ul>
+            <button id="admin-logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+            </button>
+        </nav>
+        
+        <main class="admin-content">
+            <div class="admin-header-bar">
+                <div class="admin-search">
+                    <input type="text" id="searchInput" placeholder="Ara...">
+                    <button id="searchButton"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="admin-notifications">
+                    <button id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="admin-sections">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <h3>Toplam Kullanıcı</h3>
+                            <p id="total-users">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h3>Toplam Sipariş</h3>
+                            <p id="total-orders">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-calendar-check"></i>
+                            <h3>Bekleyen Randevu</h3>
+                            <p id="pending-appointments">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-box"></i>
+                            <h3>Ürün Sayısı</h3>
+                            <p id="total-products">0</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-charts">
+                        <div class="chart-container">
+                            <h3>Aylık Satışlar</h3>
+                            <canvas id="sales-chart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Popüler Ürünler</h3>
+                            <canvas id="products-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div id="products" class="section">
+                    <div class="section-header">
+                        <h2>Ürün Yönetimi</h2>
+                        <button id="add-product" class="btn-primary">
+                            <i class="fas fa-plus"></i> Yeni Ürün Ekle
+                        </button>
+                    </div>
+                    <div class="product-filters">
+                        <select id="category-filter">
+                            <option value="">Tüm Kategoriler</option>
+                        </select>
+                        <select id="stock-filter">
+                            <option value="">Stok Durumu</option>
+                            <option value="in-stock">Stokta Var</option>
+                            <option value="out-stock">Stokta Yok</option>
+                            <option value="low-stock">Az Stok</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table id="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Ürün ID</th>
+                                    <th>Görsel</th>
+                                    <th>Ürün Adı</th>
+                                    <th>Kategori</th>
+                                    <th>Fiyat</th>
+                                    <th>Stok</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Ürünler JavaScript ile doldurulacak -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Orders Section -->
+                <div id="orders" class="section">
+                    <div class="section-header">
+                        <h2>Sipariş Yönetimi</h2>
+                        <div class="order-filters">
+                            <select id="order-status-filter">
+                                <option value="">Tüm Durumlar</option>
+                                <option value="pending">Beklemede</option>
+                                <option value="processing">İşleniyor</option>
+                                <option value="shipped">Kargoda</option>
+                                <option value="delivered">Teslim Edildi</option>
+                                <option value="cancelled">İptal Edildi</option>
+                            </select>
+                            <input type="date" id="order-date-filter">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Sipariş ID</th>
+                                    <th>Müşteri</th>
+                                    <th>Tarih</th>
+                                    <th>Toplam</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Siparişler JavaScript ile doldurulacak -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Appointments Section -->
+                <div id="appointments" class="section">
+                    <div class="section-header">
+                        <h2>Randevu Yönetimi</h2>
+                        <div class="appointment-filters">
+                            <select id="appointment-status-filter">
+                                <option value="">Tüm Durumlar</option>
+                                <option value="pending">Beklemede</option>
+                                <option value="confirmed">Onaylandı</option>
+                                <option value="cancelled">İptal Edildi</option>
+                            </select>
+                            <input type="date" id="appointment-date-filter">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="appointments-table">
+                            <thead>
+                                <tr>
+                                    <th>Randevu ID</th>
+                                    <th>Müşteri</th>
+                                    <th>Tarih</th>
+                                    <th>Saat</th>
+                                    <th>Hizmet</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Randevular JavaScript ile doldurulacak -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Section -->
+                <div id="users" class="section">
+                    <div class="section-header">
+                        <h2>Kullanıcı Yönetimi</h2>
+                        <div class="user-filters">
+                            <input type="text" id="user-search" placeholder="Kullanıcı ara...">
+                            <select id="user-status-filter">
+                                <option value="">Tüm Durumlar</option>
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Pasif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ad Soyad</th>
+                                    <th>E-posta</th>
+                                    <th>Telefon</th>
+                                    <th>Kayıt Tarihi</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Kullanıcılar JavaScript ile doldurulacak -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="edit-product-modal" class="modal">
+        <!-- Ürün düzenleme modal içeriği -->
+    </div>
+
+    <div id="view-order-modal" class="modal">
+        <!-- Sipariş detay modal içeriği -->
+    </div>
+
+    <div id="edit-appointment-modal" class="modal">
+        <!-- Randevu düzenleme modal içeriği -->
+    </div>
+
+    <!-- Kullanıcı Düzenleme Modal -->
+    <div id="edit-user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Kullanıcı Düzenle</h2>
+            <form id="edit-user-form">
+                <!-- Form içeriği JavaScript ile doldurulacak -->
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="admin.js"></script>
+
+</body>
+</html>

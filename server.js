@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const { connectDB } = require('./db');
 const apiRoutes = require('./routes/api');
+const adminRoutes = require('./routes/adminRoutes');
 const path = require('path');
 
 const app = express();
@@ -14,7 +16,7 @@ app.use((req, res, next) => {
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Ana sayfa rotası
@@ -29,6 +31,9 @@ app.get('/cart', (req, res) => {
 
 // API Routes
 app.use('/api', apiRoutes);
+
+// Admin rotaları için /api/admin prefix'ini kullan
+app.use('/api/admin', adminRoutes);
 
 // MongoDB bağlantısı ve sunucu başlatma
 async function startServer() {

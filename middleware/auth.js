@@ -1,22 +1,31 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = function(req, res, next) {
-  // Token'ı header'dan al
-  const token = req.header('x-auth-token');
-
-  // Token kontrolü
-  if (!token) {
-    return res.status(401).json({ message: 'Erişim tokeni bulunamadı' });
-  }
-
-  try {
-    // Token'ı doğrula
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || '815146479651');
+const adminAuth = (req, res, next) => {
+    const token = req.header('x-auth-token');
     
-    // User bilgisini request'e ekle
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'Geçersiz token' });
-  }
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: 'Yetkisiz erişim'
+        });
+    }
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+        if (!decoded.isAdmin) {
+            return res.status(403).json({
+                success: false,
+                message: 'Admin yetkisi gerekli'
+            });
+        }
+        req.admin = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({
+            success: false,
+            message: 'Geçersiz token'
+        });
+    }
 };
+
+module.exports = adminAuth;

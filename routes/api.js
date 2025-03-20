@@ -426,4 +426,45 @@ router.put('/update-profile', async (req, res) => {
         });
     }
 });
+
+// Admin giriş endpoint'i
+router.post('/admin/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        // Admin bilgilerini kontrol et (bu bilgileri .env dosyasından alacağız)
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        
+        if (email === adminEmail && password === adminPassword) {
+            // JWT token oluştur
+            const token = jwt.sign(
+                { isAdmin: true },
+                process.env.JWT_SECRET || 'your_jwt_secret',
+                { expiresIn: '1d' }
+            );
+            
+            res.json({
+                success: true,
+                token,
+                admin: {
+                    email: adminEmail,
+                    role: 'admin'
+                }
+            });
+        } else {
+            res.status(401).json({
+                success: false,
+                message: 'Geçersiz admin kimlik bilgileri'
+            });
+        }
+    } catch (error) {
+        console.error('Admin giriş hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası'
+        });
+    }
+});
+
 module.exports = router;
