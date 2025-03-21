@@ -26,14 +26,18 @@ const orderSchema = new mongoose.Schema({
         default: 'pending'
     },
     shippingAddress: {
-        address: String,
-        city: String,
-        postalCode: String,
-        country: String
+        type: String,
+        required: true
+    },
+    customerInfo: {
+        fullName: String,
+        email: String,
+        phone: String
     },
     paymentMethod: {
         type: String,
         required: true,
+        enum: ['credit_card', 'bank_transfer'],
         default: 'credit_card'
     },
     isPaid: {

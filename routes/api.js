@@ -6,6 +6,7 @@ const Contact = require('../models/contact');
 const Product = require('../models/product');
 const User = require('../models/user');
 const appointmentRoutes = require('./appointmentRoutes');
+const Order = require('../models/order');
 
 // Randevu rotalarını ekle
 router.use(appointmentRoutes);
@@ -487,6 +488,38 @@ router.post('/admin/login', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Sunucu hatası'
+        });
+    }
+});
+
+// Kullanıcının siparişlerini getir
+router.get('/user-orders', async (req, res) => {
+    try {
+        // Token kontrolü
+        const token = req.header('Authorization')?.replace('Bearer ', '') || req.header('x-auth-token');
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Erişim tokeni bulunamadı'
+            });
+        }
+
+        // Token'ı doğrula
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+        
+        // Siparişleri getir
+        const orders = await Order.find({ userId: decoded.userId })
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            orders
+        });
+    } catch (error) {
+        console.error('Sipariş getirme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Siparişler yüklenirken bir hata oluştu'
         });
     }
 });

@@ -157,7 +157,7 @@ async function loadOrders() {
             tbody.innerHTML = data.orders.map(order => `
                 <tr>
                     <td>${order._id}</td>
-                    <td>${order.userId?.name || 'Misafir Kullanıcı'}</td>
+                    <td>${order.customerInfo?.fullName || 'Misafir Kullanıcı'}</td>
                     <td>${new Date(order.createdAt).toLocaleDateString('tr-TR')}</td>
                     <td>${order.totalAmount.toLocaleString('tr-TR')} ₺</td>
                     <td><span class="badge ${order.status}">${getStatusText(order.status)}</span></td>
@@ -168,12 +168,24 @@ async function loadOrders() {
                         <button onclick="updateOrderStatus('${order._id}')" class="btn-icon">
                             <i class="fas fa-edit"></i>
                         </button>
+                        <button onclick="deleteOrder('${order._id}')" class="btn-icon danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             `).join('');
         }
     } catch (error) {
         console.error('Siparişleri yükleme hatası:', error);
+        const tbody = document.querySelector('#orders-table tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Siparişler yüklenirken bir hata oluştu
+                </td>
+            </tr>
+        `;
     }
 }
 
@@ -424,6 +436,31 @@ async function updateOrderStatus(orderId) {
         } catch (error) {
             console.error('Sipariş güncelleme hatası:', error);
             alert('Sipariş güncellenirken bir hata oluştu');
+        }
+    }
+}
+
+// Sipariş silme fonksiyonu
+async function deleteOrder(orderId) {
+    if (confirm('Bu siparişi silmek istediğinizden emin misiniz?')) {
+        try {
+            const response = await fetch(`/api/admin/orders/${orderId}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-auth-token': localStorage.getItem('adminToken')
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                loadOrders(); // Tabloyu yenile
+                alert('Sipariş başarıyla silindi');
+            } else {
+                alert(data.message || 'Sipariş silinirken bir hata oluştu');
+            }
+        } catch (error) {
+            console.error('Sipariş silme hatası:', error);
+            alert('Sipariş silinirken bir hata oluştu');
         }
     }
 }

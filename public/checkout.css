@@ -1,0 +1,202 @@
+/* Checkout Sayfası Stilleri */
+.checkout-container {
+    padding: 40px 0;
+    margin-top: 80px;
+}
+
+.checkout-content {
+    display: flex;
+    gap: 30px;
+}
+
+.checkout-form {
+    flex: 1;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section h3 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.checkout-summary {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.checkout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.checkout-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #dee2e6;
+}
+
+.complete-order {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .checkout-content {
+        flex-direction: column;
+    }
+}
+
+/* Demo Ödeme Modal Stilleri */
+.demo-payment-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.demo-payment-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.demo-payment-content h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.payment-options {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-success {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-success:hover,
+.btn-danger:hover {
+    opacity: 0.9;
+}
+
+/* Ödeme Detayları Stilleri */
+.payment-details {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.card-extra {
+    display: flex;
+    gap: 20px;
+}
+
+.card-extra .form-group {
+    flex: 1;
+}
+
+.bank-info {
+    background: #fff;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.bank-info p {
+    margin: 5px 0;
+}
+
+.notice {
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    padding: 10px;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.notice i {
+    color: #856404;
+}
+
+.notice p {
+    margin: 0;
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+/* Kart numarası formatlaması için */
+input[name="cardNumber"] {
+    letter-spacing: 1px;
+}
+
+input[name="expiry"] {
+    text-align: center;
+}
+
+input[name="cvv"] {
+    text-align: center;
+}

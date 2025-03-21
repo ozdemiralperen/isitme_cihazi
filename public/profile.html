@@ -141,6 +141,87 @@
         .hidden {
             display: none;
         }
+        /* Sipariş Zaman Çizelgesi */
+        .order-timeline {
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        .timeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 20px;
+        }
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            border: 2px solid #dee2e6;
+            margin-bottom: 8px;
+        }
+        .timeline-step.active .timeline-icon {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .timeline-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            text-align: center;
+        }
+        .timeline-step.active .timeline-text {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .timeline-line {
+            flex: 1;
+            height: 2px;
+            background-color: #dee2e6;
+            position: relative;
+            top: -29px;
+            z-index: 0;
+        }
+        .timeline-step.active + .timeline-line {
+            background-color: #28a745;
+        }
+        .timeline-cancelled {
+            text-align: center;
+            color: #dc3545;
+            padding: 15px;
+            border: 1px dashed #dc3545;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .timeline-cancelled i {
+            margin-right: 8px;
+        }
+        /* Sipariş Detayları */
+        .order-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .order-details h6 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .order-details p {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -309,7 +390,14 @@
             <!-- Siparişlerim Sekmesi -->
             <div id="orders" class="tab-content hidden">
                 <h3 class="mb-4">Siparişlerim</h3>
-                <p>Siparişleriniz burada listelenecektir.</p>
+                <div id="orders-container">
+                    <!-- Siparişler JavaScript ile doldurulacak -->
+                </div>
+                <div id="no-orders" class="text-center py-5 hidden">
+                    <i class="fas fa-box-open fa-3x mb-3"></i>
+                    <p>Henüz siparişiniz bulunmuyor.</p>
+                    <a href="store.html" class="btn btn-primary mt-3">Alışverişe Başla</a>
+                </div>
             </div>
         </div>
     </div>

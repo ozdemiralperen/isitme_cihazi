@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme - İşitTech</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">İşit<span>Tech</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="store.html">Mağaza</a></li>
+                    <li><a href="cart.html">Sepetim</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <div class="container">
+            <h1>Ödeme</h1>
+            
+            <div class="checkout-content">
+                <div class="checkout-form">
+                    <form id="checkout-form">
+                        <div class="form-section">
+                            <h3>Kişisel Bilgiler</h3>
+                            <div class="form-group">
+                                <label>Ad Soyad</label>
+                                <input type="text" name="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>E-posta</label>
+                                <input type="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefon</label>
+                                <input type="tel" name="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Teslimat Adresi</h3>
+                            <div class="form-group">
+                                <label>Adres</label>
+                                <textarea name="address" required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Ödeme Yöntemi seçimi -->
+                        <div class="form-section">
+                            <h3>Ödeme Yöntemi</h3>
+                            <div class="form-group">
+                                <select name="paymentMethod" required>
+                                    <option value="credit_card">Kredi Kartı</option>
+                                    <option value="bank_transfer">Havale/EFT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ödeme detayları için konteyner -->
+                        <div id="payment-details"></div>
+
+                        <div id="checkout-summary" class="checkout-summary">
+                            <!-- Sepet özeti JavaScript ile doldurulacak -->
+                        </div>
+
+                        <button type="submit" class="btn-primary complete-order">
+                            Siparişi Tamamla
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cart.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>

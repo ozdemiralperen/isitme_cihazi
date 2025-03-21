@@ -3,6 +3,7 @@ const express = require('express');
 const { connectDB } = require('./db');
 const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/adminRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const path = require('path');
 
 const app = express();
@@ -31,6 +32,7 @@ app.get('/cart', (req, res) => {
 
 // API Routes
 app.use('/api', apiRoutes);
+app.use('/api', orderRoutes);
 
 // Admin rotaları için /api/admin prefix'ini kullan
 app.use('/api/admin', adminRoutes);

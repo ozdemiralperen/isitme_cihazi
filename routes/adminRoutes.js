@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Order, User, Product, Appointment } = require('../models');
-const adminAuth = require('../middleware/auth');
+const { adminAuth } = require('../middleware/auth'); // Fixed import
 const multer = require('multer');
 const path = require('path');
 
@@ -259,6 +259,79 @@ router.get('/orders', adminAuth, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Siparişler yüklenirken hata oluştu'
+        });
+    }
+});
+
+// Order status update endpoint
+router.put('/orders/:id', adminAuth, async (req, res) => {
+    try {
+        const { status } = req.body;
+        
+        // Validate status
+        const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçersiz sipariş durumu'
+            });
+        }
+
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            { 
+                status,
+                updatedAt: new Date()
+            },
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Sipariş bulunamadı'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Sipariş durumu güncellendi',
+            order
+        });
+
+    } catch (error) {
+        console.error('Sipariş durumu güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sipariş durumu güncellenirken bir hata oluştu'
+        });
+    }
+});
+
+// Sipariş silme endpoint'i
+router.delete('/orders/:id', adminAuth, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Sipariş bulunamadı'
+            });
+        }
+
+        await Order.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: 'Sipariş başarıyla silindi'
+        });
+
+    } catch (error) {
+        console.error('Sipariş silme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sipariş silinirken bir hata oluştu'
         });
     }
 });

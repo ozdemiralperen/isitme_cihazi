@@ -46,19 +46,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Tab değiştirme işlevi
+    // Tab değiştirme olayını güncelle
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const tabId = button.getAttribute('data-tab');
-
+            
             // Aktif tab'ı değiştir
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-
+            
             // Tab içeriğini göster/gizle
             tabContents.forEach(content => {
                 if (content.id === tabId) {
                     content.classList.remove('hidden');
+                    // Orders tab'ına geçildiğinde siparişleri yükle
+                    if (tabId === 'orders') {
+                        loadOrders();
+                    }
                 } else {
                     content.classList.add('hidden');
                 }
@@ -438,6 +442,188 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Randevu iptal edilirken bir hata oluştu. Lütfen tekrar deneyin.');
             cancelAppointmentModal.hide();
         }
+    }
+    // Siparişleri yükle
+    async function loadOrders() {
+        const ordersContainer = document.getElementById('orders-container');
+        const noOrdersDiv = document.getElementById('no-orders');
+
+        try {
+            ordersContainer.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p class="mt-3">Siparişleriniz yükleniyor...</p>
+                </div>
+            `;
+
+            const response = await fetch('/api/user-orders', {
+                headers: {
+                    'x-auth-token': token
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.orders.length === 0) {
+                    noOrdersDiv.classList.remove('hidden');
+                    ordersContainer.classList.add('hidden');
+                } else {
+                    noOrdersDiv.classList.add('hidden');
+                    ordersContainer.classList.remove('hidden');
+                    displayOrders(data.orders);
+                }
+            } else {
+                throw new Error(data.message || 'Siparişler yüklenemedi');
+            }
+        } catch (error) {
+            console.error('Siparişleri yükleme hatası:', error);
+            ordersContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Siparişler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.
+                </div>
+            `;
+        }
+    }
+
+    // Siparişleri görüntüle
+    function displayOrders(orders) {
+        const ordersContainer = document.getElementById('orders-container');
+        
+        let html = '<div class="orders-list">';
+        
+        orders.forEach(order => {
+            const date = new Date(order.createdAt).toLocaleDateString('tr-TR');
+            
+            html += `
+                <div class="order-card mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Sipariş No: ${order._id}</span>
+                            <span class="badge ${order.status}">${getOrderStatusText(order.status)}</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Sipariş Durumu Zaman Çizelgesi -->
+                            <div class="order-timeline mb-3">
+                                ${getOrderTimeline(order.status)}
+                            </div>
+
+                            <!-- Sipariş Bilgileri -->
+                            <div class="order-details mb-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Teslimat Bilgileri</h6>
+                                        <p class="mb-1"><strong>Ad Soyad:</strong> ${order.customerInfo.fullName}</p>
+                                        <p class="mb-1"><strong>Telefon:</strong> ${order.customerInfo.phone}</p>
+                                        <p class="mb-1"><strong>Adres:</strong> ${order.shippingAddress}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Ödeme Bilgileri</h6>
+                                        <p class="mb-1"><strong>Ödeme Yöntemi:</strong> ${getPaymentMethodText(order.paymentMethod)}</p>
+                                        <p class="mb-1"><strong>Ödeme Durumu:</strong> ${order.isPaid ? '<span class="text-success">Ödendi</span>' : '<span class="text-warning">Beklemede</span>'}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ürün Listesi -->
+                            <div class="order-items">
+                                ${order.items.map(item => `
+                                    <div class="order-item d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="mb-0">${item.name}</h6>
+                                            <small class="text-muted">${item.quantity} adet x ${item.price.toLocaleString('tr-TR')} ₺</small>
+                                        </div>
+                                        <div class="item-total">
+                                            ${(item.quantity * item.price).toLocaleString('tr-TR')} ₺
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="mb-0"><strong>Tarih:</strong> ${date}</p>
+                                </div>
+                                <div class="order-total">
+                                    <h5>Toplam: ${order.totalAmount.toLocaleString('tr-TR')} ₺</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        ordersContainer.innerHTML = html;
+    }
+
+    // Ödeme yöntemi çevirisi
+    function getPaymentMethodText(method) {
+        const methodMap = {
+            'credit_card': 'Kredi Kartı',
+            'bank_transfer': 'Havale/EFT'
+        };
+        return methodMap[method] || method;
+    }
+
+    // Sipariş durumu çevirisi
+    function getOrderStatusText(status) {
+        const statusMap = {
+            'pending': 'Onay Bekliyor',
+            'processing': 'Hazırlanıyor',
+            'shipped': 'Kargoda',
+            'delivered': 'Teslim Edildi',
+            'cancelled': 'İptal Edildi'
+        };
+        return statusMap[status] || status;
+    }
+
+    // Sipariş zaman çizelgesi
+    function getOrderTimeline(status) {
+        const steps = [
+            { status: 'pending', text: 'Onay Bekliyor', icon: 'fa-clock' },
+            { status: 'processing', text: 'Hazırlanıyor', icon: 'fa-box' },
+            { status: 'shipped', text: 'Kargoda', icon: 'fa-truck' },
+            { status: 'delivered', text: 'Teslim Edildi', icon: 'fa-check-circle' }
+        ];
+
+        if (status === 'cancelled') {
+            return `
+                <div class="timeline-cancelled">
+                    <i class="fas fa-times-circle"></i>
+                    Sipariş İptal Edildi
+                </div>
+            `;
+        }
+
+        let html = '<div class="timeline">';
+        let currentFound = false;
+
+        steps.forEach((step, index) => {
+            const isActive = !currentFound && (
+                status === step.status || 
+                steps.findIndex(s => s.status === status) > index
+            );
+            
+            if (status === step.status) currentFound = true;
+
+            html += `
+                <div class="timeline-step ${isActive ? 'active' : ''}">
+                    <div class="timeline-icon">
+                        <i class="fas ${step.icon}"></i>
+                    </div>
+                    <div class="timeline-text">${step.text}</div>
+                </div>
+                ${index < steps.length - 1 ? '<div class="timeline-line"></div>' : ''}
+            `;
+        });
+
+        html += '</div>';
+        return html;
     }
 });
 // Profile form submission
