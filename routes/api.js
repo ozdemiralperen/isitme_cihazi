@@ -524,4 +524,86 @@ router.get('/user-orders', async (req, res) => {
     }
 });
 
+// Şifre sıfırlama endpoint'i
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        // Email kontrolü
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email adresi gereklidir'
+            });
+        }
+
+        // Kullanıcıyı bul
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Bu email ile kayıtlı kullanıcı bulunamadı'
+            });
+        }
+
+        // Şifre validasyonu
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Şifre en az 6 karakter olmalıdır'
+            });
+        }
+
+        // Yeni şifreyi hashle
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Kullanıcı şifresini güncelle
+        user.password = hashedPassword;
+        user.updatedAt = new Date();
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Şifreniz başarıyla güncellendi'
+        });
+
+    } catch (error) {
+        console.error('Şifre sıfırlama hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Şifre sıfırlanırken bir hata oluştu'
+        });
+    }
+});
+
+// E-posta kontrolü endpoint'i
+router.post('/check-email', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // E-posta kontrolü
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'E-posta adresi gereklidir'
+            });
+        }
+
+        // Kullanıcıyı kontrol et
+        const user = await User.findOne({ email });
+
+        res.json({
+            success: true,
+            exists: !!user
+        });
+
+    } catch (error) {
+        console.error('E-posta kontrolü hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası'
+        });
+    }
+});
+
 module.exports = router;

@@ -5,6 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giriş Yap</title>
   <link rel="stylesheet" href="register.css">
+  <style>
+    /* Modal Stilleri */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+
+    .modal.show {
+        display: block;
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .close-button {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .close-button:hover {
+        color: #666;
+    }
+
+    /* Spinner animasyonu */
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Buton yükleniyor durumu */
+    button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px 16px;
+    }
+  </style>
 </head>
 <body>
 
@@ -48,8 +119,50 @@
     </form>
     <div class="link-container">
       <p>Henüz bir hesabın yok mu? <a href="register.html">Kayıt ol</a></p>
+      <p><a href="#" id="forgot-password">Şifremi unuttum</a></p>
+    </div>
+
+    <!-- Şifre Sıfırlama Modal -->
+    <div id="resetPasswordModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Şifre Sıfırlama</h2>
+        <div id="reset-step-1">
+          <p>E-posta adresinizi girin. Size doğrulama kodu göndereceğiz.</p>
+          <div class="form-group">
+            <label for="reset-email">E-posta</label>
+            <input type="email" id="reset-email" required>
+          </div>
+          <button id="send-reset-code" class="btn-primary">Kod Gönder</button>
+        </div>
+        <div id="reset-step-2" style="display: none;">
+          <p>E-postanıza gönderilen 6 haneli kodu girin.</p>
+          <div class="form-group">
+            <label for="reset-code">Doğrulama Kodu</label>
+            <input type="text" id="reset-code" maxlength="6" required>
+          </div>
+          <div class="form-group">
+            <label for="new-password">Yeni Şifre</label>
+            <input type="password" id="new-password" required>
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Şifre Tekrar</label>
+            <input type="password" id="confirm-password" required>
+          </div>
+          <button id="reset-password" class="btn-primary">Şifreyi Sıfırla</button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- EmailJS Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+      emailjs.init("kCC8wQSKpJuMXbRlR");
+  </script>
+
+  <!-- Other Scripts -->
   <script src="script.js"></script>
+  <script src="resetPassword.js"></script>
 </body>
 </html>
