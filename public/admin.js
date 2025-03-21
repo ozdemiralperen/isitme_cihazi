@@ -517,10 +517,11 @@ async function editUser(userId) {
         const data = await response.json();
         if (data.success) {
             const user = data.user;
-            // Modal'ı aç
-            document.getElementById('edit-user-modal').style.display = 'block';
-            // Form içeriğini doldur
-            document.getElementById('edit-user-form').innerHTML = `
+            const modal = document.getElementById('edit-user-modal');
+            const form = document.getElementById('edit-user-form');
+            
+            // Form içeriğini güncelle
+            form.innerHTML = `
                 <input type="hidden" name="userId" value="${user._id}">
                 <div class="form-group">
                     <label>Kullanıcı Adı</label>
@@ -538,44 +539,49 @@ async function editUser(userId) {
                     <label>Adres</label>
                     <textarea name="address" required>${user.address || ''}</textarea>
                 </div>
-                </div>
                 <button type="submit" class="btn-primary">Güncelle</button>
             `;
 
-// Form submit olayını dinle
-document.getElementById('edit-user-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const updateData = {
-        username: formData.get('username'),
-        phone: formData.get('phone'),
-        address: formData.get('address')
-    };
+            // Modal'ı göster
+            modal.style.display = 'block';
 
-    try {
-        const updateResponse = await fetch(`/api/admin/users/${userId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-auth-token': localStorage.getItem('adminToken')
-            },
-            body: JSON.stringify(updateData)
-        });
+            // Önceki event listener'ları temizle
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
 
-        if (!updateResponse.ok) {
-            throw new Error('Güncelleme başarısız');
-        }
+            // Yeni form submit olayını ekle
+            newForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(newForm);
+                const updateData = {
+                    username: formData.get('username'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address')
+                };
 
-        const updateResult = await updateResponse.json();
-        if (updateResult.success) {
-            alert('Kullanıcı bilgileri güncellendi');
-            document.getElementById('edit-user-modal').style.display = 'none';
-            loadUsers(); // Tabloyu yenile
-        }
-    } catch (error) {
-        console.error('Kullanıcı güncelleme hatası:', error);
-    }
-});
+                try {
+                    const updateResponse = await fetch(`/api/admin/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': localStorage.getItem('adminToken')
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+
+                    const updateResult = await updateResponse.json();
+                    if (updateResult.success) {
+                        alert('Kullanıcı bilgileri güncellendi');
+                        modal.style.display = 'none';
+                        loadUsers(); // Tabloyu yenile
+                    } else {
+                        alert(updateResult.message || 'Güncelleme başarısız');
+                    }
+                } catch (error) {
+                    console.error('Kullanıcı güncelleme hatası:', error);
+                    alert('Güncelleme sırasında bir hata oluştu');
+                }
+            });
         }
     } catch (error) {
         console.error('Kullanıcı detayları yükleme hatası:', error);
